@@ -8,7 +8,7 @@ import { Produto } from '../../models/produto';
 })
 export class ProdutosService {
   private apiUrl = 'http://localhost:8080/api/emanager/produto';
-  private usuarioId = 1; // se precisar enviar no body
+  private usuarioId = 1; // simulação de usuário logado
 
   constructor(private http: HttpClient) {}
 
@@ -19,20 +19,16 @@ export class ProdutosService {
 
   // Adicionar produto
   adicionar(produto: Produto): Observable<Produto> {
-    return this.http.post<Produto>(`${this.apiUrl}/save`, produto);
+    return this.http.post<Produto>(`${this.apiUrl}/save/${this.usuarioId}`, produto);
   }
 
   // Editar produto
   editar(produto: Produto): Observable<Produto> {
-    return this.http.put<Produto>(`${this.apiUrl}/update/${produto.id}`, produto);
+    return this.http.put<Produto>(`${this.apiUrl}/update/${produto.id}/${this.usuarioId}`, produto);
   }
 
   // Remover produto
- // produtos.service.ts
-remover(id: number): Observable<void> {
-  return this.http.delete<void>(`${this.apiUrl}/produto/delete/${id}`);
+  remover(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
+  }
 }
-
-
-}
- 
