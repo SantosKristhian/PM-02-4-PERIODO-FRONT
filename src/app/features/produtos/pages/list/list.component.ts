@@ -1,22 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common'; // necessário para *ngFor, *ngIf
+import { Router } from '@angular/router';
 import { ProdutosService } from '../../../../../app/core/services/produtos.service';
-import { Produto } from'../../../../models/produto';
+import { Produto } from '../../../../models/produto';
 
 @Component({
   selector: 'app-list',
   standalone: true,
   imports: [
-    CommonModule, // necessário para *ngFor, *ngIf etc.
-    CurrencyPipe
+    CommonModule // necessário para *ngFor, *ngIf
   ],
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss'] // <-- arrumei o nome (era styleUrl)
+  styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
   produtos: Produto[] = [];
 
-  constructor(private produtosService: ProdutosService) {}
+  constructor(
+    private produtosService: ProdutosService,
+    private router: Router // caso queira usar navegação futuramente
+  ) {}
 
   ngOnInit(): void {
     this.carregarProdutos();

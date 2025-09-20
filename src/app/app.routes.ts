@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ListComponent } from './features/produtos/pages/list/list.component'; // importe o ListComponent
+import { ListComponent } from './features/produtos/pages/list/list.component';
 
 export const routes: Routes = [
   {
@@ -13,8 +13,8 @@ export const routes: Routes = [
       import('./features/auth/pages/login/login.component').then(m => m.LoginComponent)
   },
   {
-    path: 'produtos',
-    component: ListComponent // rota para redirecionar após login
+    path: 'produtos/list', // rota para redirecionamento após login
+    component: ListComponent
   },
   {
     path: 'vendas',
