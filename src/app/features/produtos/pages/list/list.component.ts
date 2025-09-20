@@ -14,6 +14,12 @@ import { Produto } from '../../../../models/produto';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
+editar(_t29: Produto) {
+throw new Error('Method not implemented.');
+}
+remover(_t29: Produto) {
+throw new Error('Method not implemented.');
+}
   produtos: Produto[] = [];
 
   constructor(

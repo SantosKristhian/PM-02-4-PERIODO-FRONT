@@ -8,11 +8,28 @@ import { Produto } from '../../models/produto';
 })
 export class ProdutosService {
   private apiUrl = 'http://localhost:8080/api/emanager/produto';
-  private usuarioId = 1;
+  private usuarioId = 1; // se precisar enviar no body
 
   constructor(private http: HttpClient) {}
 
+  // Listar produtos
   listar(): Observable<Produto[]> {
     return this.http.get<Produto[]>(`${this.apiUrl}/findAll`);
   }
+
+  // Adicionar produto
+  adicionar(produto: Produto): Observable<Produto> {
+    return this.http.post<Produto>(`${this.apiUrl}/save`, produto);
+  }
+
+  // Editar produto
+  editar(produto: Produto): Observable<Produto> {
+    return this.http.put<Produto>(`${this.apiUrl}/update/${produto.id}`, produto);
+  }
+
+  // Remover produto
+  remover(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
+  }
 }
+ 
