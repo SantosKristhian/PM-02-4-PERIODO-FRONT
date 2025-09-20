@@ -1,13 +1,21 @@
 import { Routes } from '@angular/router';
+import { ListComponent } from './features/produtos/pages/list/list.component'; // importe o ListComponent
 
 export const routes: Routes = [
-  { 
-  path: '', 
-  pathMatch: 'full',
-  loadComponent: () => import('./features/auth/pages/login/login.component')
-  .then(m => m.LoginComponent)
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'login'
   },
-
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./features/auth/pages/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'produtos',
+    component: ListComponent // rota para redirecionar após login
+  },
   {
     path: 'vendas',
     loadChildren: () =>
