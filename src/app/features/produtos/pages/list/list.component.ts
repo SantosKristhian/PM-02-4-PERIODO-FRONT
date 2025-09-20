@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // necessário para *ngFor, *ngIf
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProdutosService } from '../../../../../app/core/services/produtos.service';
 import { Produto } from '../../../../models/produto';
-import { FormsModule } from '@angular/forms'; // necessário para ngModel
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-list',
@@ -19,9 +19,23 @@ export class ListComponent implements OnInit {
   produtos: Produto[] = [];
   searchText: string = '';
 
+  // controle do form
+  mostrarForm: boolean = false;
+
+  // objeto usado no form
+novoProduto: Produto = {
+  id: 0,
+  nome: '',
+  quantidade: undefined,
+  preco: undefined,
+  categoria: { id: undefined },
+  descricao: '',
+  estoque: 0
+};
+
   constructor(
     private produtosService: ProdutosService,
-    private router: Router // caso queira usar navegação futuramente
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -33,32 +47,67 @@ export class ListComponent implements OnInit {
     this.produtosService.listar().subscribe({
       next: (dados) => {
         this.produtos = dados;
-        console.log('Produtos carregados:', this.produtos);
       },
-      error: (erro) => {
-        console.error('Erro ao carregar produtos:', erro);
-      }
+      error: (erro) => console.error('Erro ao carregar produtos:', erro)
+    });
+  }
+
+  // Criar novo produto
+  criarProduto(): void {
+    // Mapeia apenas os campos que o backend espera
+    const produtoParaSalvar = {
+      nome: this.novoProduto.nome,
+      quantidade: this.novoProduto.quantidade,
+      preco: this.novoProduto.preco,
+      categoria: { id: this.novoProduto.categoria.id }
+    };
+
+    this.produtosService.adicionar(produtoParaSalvar as any).subscribe({
+      next: () => {
+        this.carregarProdutos();
+        this.mostrarForm = false;
+        this.novoProduto = {
+          id: 0,
+          nome: '',
+          quantidade: 0,
+          preco: 0,
+          categoria: { id: 0 },
+          descricao: '',
+          estoque: 0
+        };
+      },
+      error: (erro) => console.error('Erro ao adicionar produto:', erro)
     });
   }
 
   // Editar produto
   editar(produto: Produto): void {
     const produtoEditado = { ...produto, nome: produto.nome + ' (editado)' };
-    this.produtosService.editar(produtoEditado).subscribe({
+
+    // Mapear apenas campos válidos para backend
+    const produtoParaSalvar = {
+      id: produtoEditado.id,
+      nome: produtoEditado.nome,
+      quantidade: produtoEditado.quantidade,
+      preco: produtoEditado.preco,
+      categoria: { id: produtoEditado.categoria.id }
+    };
+
+    this.produtosService.editar(produtoParaSalvar as any).subscribe({
       next: () => this.carregarProdutos(),
       error: (erro) => console.error('Erro ao editar produto:', erro)
     });
   }
 
   // Remover produto
- remover(produto: Produto): void {
-  if (confirm(`Deseja realmente excluir ${produto.nome}?`)) {
-    this.produtosService.remover(produto.id).subscribe({
-      next: () => this.carregarProdutos(),
-      error: (erro) => console.error('Erro ao remover produto:', erro)
-    });
+  remover(produto: Produto): void {
+    if (confirm(`Deseja realmente excluir ${produto.nome}?`)) {
+      this.produtosService.remover(produto.id).subscribe({
+        next: () => this.carregarProdutos(),
+        error: (erro) => console.error('Erro ao remover produto:', erro)
+      });
+    }
   }
-}
 
   // Filtrar produtos pelo nome
   filtrar(): void {
