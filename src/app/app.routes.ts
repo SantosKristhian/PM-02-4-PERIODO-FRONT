@@ -4,7 +4,8 @@ export const routes: Routes = [
   { 
   path: '', 
   pathMatch: 'full',
-  loadComponent: () => import('./features/produtos/pages/list/list.component').then(m => m.ListComponent)
+  loadComponent: () => import('./features/auth/pages/login/login.component')
+  .then(m => m.LoginComponent)
   },
 
   {
