@@ -28,8 +28,11 @@ export class ProdutosService {
   }
 
   // Remover produto
-  remover(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
-  }
+ // produtos.service.ts
+remover(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.apiUrl}/produto/delete/${id}`);
+}
+
+
 }
  
