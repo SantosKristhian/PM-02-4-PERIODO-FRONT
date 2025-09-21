@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ListComponent } from './features/produtos/pages/list/list.component';
+import { CategoriasListComponent } from './features/categorias/CategoriasListComponent';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -30,8 +31,7 @@ export const routes: Routes = [
   },
   {
     path: 'categorias',
-    loadComponent: () =>
-      import('./features/categorias/CategoriasListComponent').then(m => m.CategoriasListComponent)
+    component: CategoriasListComponent
   },
 
   { path: '**', redirectTo: '', pathMatch: 'full' }
