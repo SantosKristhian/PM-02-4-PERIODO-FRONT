@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { ListComponent } from './features/produtos/pages/list/list.component';
-import { CategoriasListComponent } from './features/categorias/CategoriasListComponent';
+import { VendasComponent } from './features/vendas/pages/vendas/vendas.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -12,12 +11,13 @@ export const routes: Routes = [
   },
   {
     path: 'produtos/list',
-    component: ListComponent
+    loadComponent: () =>
+      import('./features/produtos/pages/list/list.component').then(m => m.ListComponent)
   },
   {
     path: 'vendas',
-    loadChildren: () =>
-      import('./features/vendas/vendas.module').then(m => m.VendasModule)
+    loadComponent: () =>
+      import('./features/vendas/pages/vendas/vendas.component').then(m => m.VendasComponent)
   },
   {
     path: 'usuarios',
@@ -31,8 +31,9 @@ export const routes: Routes = [
   },
   {
     path: 'categorias',
-    component: CategoriasListComponent
+    loadComponent: () =>
+      import('./features/categorias/CategoriasListComponent').then(m => m.CategoriasListComponent)
   },
 
-  { path: '**', redirectTo: '', pathMatch: 'full' }
+  { path: '**', redirectTo: '' }
 ];

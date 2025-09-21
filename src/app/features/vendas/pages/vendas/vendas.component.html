@@ -1,0 +1,55 @@
+<div class="container mt-4">
+  <h2>Registrar Venda</h2>
+
+  <form (ngSubmit)="salvarVendas()" #vendaForm="ngForm">
+    <!-- Comprador -->
+    <div class="mb-3">
+      <label class="form-label">Comprador</label>
+      <input type="text" class="form-control" [(ngModel)]="compradorCpf" name="comprador" required />
+    </div>
+
+    <!-- Usuário Responsável -->
+    <div class="mb-3">
+      <label class="form-label">Usuário Responsável</label>
+      <select class="form-select" [(ngModel)]="usuarioResponsavelId" name="usuarioResponsavel" required>
+        <option [ngValue]="null" disabled selected>Selecione um usuário</option>
+        <option *ngFor="let u of usuarios" [ngValue]="u.id">{{ u.nome }}</option>
+      </select>
+    </div>
+
+    <!-- Produto -->
+    <div class="mb-3">
+      <label class="form-label">Produto</label>
+      <select class="form-select" [(ngModel)]="produtoId" name="produto" (change)="onProdutoChange()" required>
+        <option [ngValue]="null" disabled selected>Selecione um produto</option>
+        <option *ngFor="let p of produtos" [ngValue]="p.id">{{ p.nome }}</option>
+      </select>
+    </div>
+
+    <!-- Quantidade -->
+    <div class="mb-3">
+      <label class="form-label">Quantidade</label>
+      <input type="number" class="form-control" [(ngModel)]="quantidade" name="quantidade" required min="1" />
+    </div>
+
+    <!-- Preço Unitário -->
+    <div class="mb-3">
+      <label class="form-label">Preço Unitário</label>
+      <input type="number" class="form-control" [value]="precoUnitario" readonly />
+    </div>
+
+    <!-- Subtotal -->
+    <div class="mb-3">
+      <label class="form-label">Subtotal</label>
+      <input type="number" class="form-control" [value]="subtotal" readonly />
+    </div>
+
+    <!-- Total -->
+    <div class="mb-3">
+      <label class="form-label">Total</label>
+      <input type="number" class="form-control" [value]="total" readonly />
+    </div>
+
+    <button class="btn btn-success" type="submit">Salvar Venda</button>
+  </form>
+</div>
