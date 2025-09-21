@@ -2,18 +2,15 @@ import { Routes } from '@angular/router';
 import { ListComponent } from './features/produtos/pages/list/list.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'login'
-  },
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
+
   {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/pages/login/login.component').then(m => m.LoginComponent)
   },
   {
-    path: 'produtos/list', // rota para redirecionamento após login
+    path: 'produtos/list',
     component: ListComponent
   },
   {
@@ -31,6 +28,11 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/relatorios/relatorios.module').then(m => m.RelatoriosModule)
   },
-  // rota para página não encontrada
+  {
+    path: 'categorias',
+    loadComponent: () =>
+      import('./features/categorias/CategoriasListComponent').then(m => m.CategoriasListComponent)
+  },
+
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

@@ -1,0 +1,77 @@
+<div class="d-flex min-vh-100 bg-light">
+  <aside class="bg-secondary d-flex flex-column p-3" style="width: 250px; border-radius: 0 1rem 1rem 0;">
+    <!-- Sidebar futura -->
+  </aside>
+
+  <main class="flex-grow-1 p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h4 fw-bold">Gerenciamento de Categorias</h1>
+      <button mdbBtn color="dark" rounded="true" (click)="mostrarForm = !mostrarForm">
+        Adicionar nova categoria
+      </button>
+    </div>
+
+    <!-- Formulário de criação -->
+    <div *ngIf="mostrarForm" class="card p-3 mb-4 shadow-sm rounded-4">
+      <form (ngSubmit)="criarCategoria()">
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label for="nomeCategoria" class="form-label">Nome da Categoria</label>
+            <input 
+              id="nomeCategoria" 
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="novaCategoria.nome" 
+              name="nomeCategoria" 
+              required
+            />
+          </div>
+          <div class="col-md-2 d-flex align-items-end gap-2">
+            <button mdbBtn color="success" type="submit">✔</button>
+            <button mdbBtn color="secondary" type="button" (click)="mostrarForm = false">✖</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabela de categorias -->
+    <div class="card rounded-4 shadow-sm">
+      <div class="card-body">
+        <table mdbTable class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cat of categorias">
+              <td>
+                <ng-container *ngIf="categoriaEditando?.id === cat.id; else nomeView">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="categoriaEditando!.nome"
+                    [ngModelOptions]="{standalone: true}"
+                    class="form-control form-control-sm"
+                  />
+                </ng-container>
+                <ng-template #nomeView>{{ cat.nome }}</ng-template>
+              </td>
+              <td>
+  <ng-container *ngIf="categoriaEditando?.id === cat.id; else botoesNormais">
+    <button mdbBtn size="sm" color="success" (click)="salvarEdicao()">💾</button>
+    <button mdbBtn size="sm" color="secondary" (click)="cancelarEdicao()">✖</button>
+  </ng-container>
+  <ng-template #botoesNormais>
+    <button mdbBtn size="sm" color="link" (click)="editar(cat)">✏️</button>
+    <button mdbBtn size="sm" color="danger" (click)="removerCategoria(cat.id)">🗑️</button>
+  </ng-template>
+</td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
