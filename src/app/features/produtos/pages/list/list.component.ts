@@ -8,10 +8,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss']
 })
@@ -19,42 +16,33 @@ export class ListComponent implements OnInit {
   produtos: Produto[] = [];
   searchText: string = '';
 
-  // controle do form
   mostrarForm: boolean = false;
 
-  // objeto usado no form
-novoProduto: Produto = {
-  id: 0,
-  nome: '',
-  quantidade: undefined,
-  preco: undefined,
-  categoria: { id: undefined },
-  descricao: '',
-  estoque: 0
-};
+  novoProduto: Produto = {
+    id: 0,
+    nome: '',
+    quantidade: 0,
+    preco: 0,
+    categoria: { id: 0, nome: '' },
+    estoque: 0
+  };
 
-  constructor(
-    private produtosService: ProdutosService,
-    private router: Router
-  ) {}
+  produtoEditando: Produto | null = null;
+
+  constructor(private produtosService: ProdutosService, private router: Router) {}
 
   ngOnInit(): void {
     this.carregarProdutos();
   }
 
-  // Carrega todos os produtos
   carregarProdutos(): void {
     this.produtosService.listar().subscribe({
-      next: (dados) => {
-        this.produtos = dados;
-      },
-      error: (erro) => console.error('Erro ao carregar produtos:', erro)
+      next: dados => this.produtos = dados,
+      error: erro => console.error('Erro ao carregar produtos:', erro)
     });
   }
 
-  // Criar novo produto
   criarProduto(): void {
-    // Mapeia apenas os campos que o backend espera
     const produtoParaSalvar = {
       nome: this.novoProduto.nome,
       quantidade: this.novoProduto.quantidade,
@@ -66,50 +54,60 @@ novoProduto: Produto = {
       next: () => {
         this.carregarProdutos();
         this.mostrarForm = false;
-        this.novoProduto = {
-          id: 0,
-          nome: '',
-          quantidade: 0,
-          preco: 0,
-          categoria: { id: 0 },
-          descricao: '',
-          estoque: 0
-        };
+        this.novoProduto = { id: 0, nome: '', quantidade: 0, preco: 0, categoria: { id: 0, nome: '' }, estoque: 0 };
       },
-      error: (erro) => console.error('Erro ao adicionar produto:', erro)
+      error: erro => console.error('Erro ao adicionar produto:', erro)
     });
   }
 
-  // Editar produto
-  editar(produto: Produto): void {
-    const produtoEditado = { ...produto, nome: produto.nome + ' (editado)' };
+  // Inicia edição
+ // Inicia edição
+editar(produto: Produto): void {
+  this.produtoEditando = {
+    id: produto.id,
+    nome: produto.nome || '',
+    quantidade: produto.quantidade ?? 0,
+    preco: produto.preco ?? 0,
+    categoria: produto.categoria || { id: 0, nome: '' },
+    estoque: produto.estoque ?? 0
+  };
+}
 
-    // Mapear apenas campos válidos para backend
+
+  // Salvar edição
+  salvarEdicao(): void {
+    if (!this.produtoEditando) return;
+
     const produtoParaSalvar = {
-      id: produtoEditado.id,
-      nome: produtoEditado.nome,
-      quantidade: produtoEditado.quantidade,
-      preco: produtoEditado.preco,
-      categoria: { id: produtoEditado.categoria.id }
+      id: this.produtoEditando.id,
+      nome: this.produtoEditando.nome,
+      quantidade: this.produtoEditando.quantidade,
+      preco: this.produtoEditando.preco,
+      categoria: { id: this.produtoEditando.categoria.id }
     };
 
     this.produtosService.editar(produtoParaSalvar as any).subscribe({
-      next: () => this.carregarProdutos(),
-      error: (erro) => console.error('Erro ao editar produto:', erro)
+      next: () => {
+        this.carregarProdutos();
+        this.produtoEditando = null;
+      },
+      error: erro => console.error('Erro ao editar produto:', erro)
     });
   }
 
-  // Remover produto
+  cancelarEdicao(): void {
+    this.produtoEditando = null;
+  }
+
   remover(produto: Produto): void {
     if (confirm(`Deseja realmente excluir ${produto.nome}?`)) {
       this.produtosService.remover(produto.id).subscribe({
         next: () => this.carregarProdutos(),
-        error: (erro) => console.error('Erro ao remover produto:', erro)
+        error: erro => console.error('Erro ao remover produto:', erro)
       });
     }
   }
 
-  // Filtrar produtos pelo nome
   filtrar(): void {
     if (!this.searchText) {
       this.carregarProdutos();

@@ -3,7 +3,6 @@ export interface Produto {
   estoque: any;
   id: number;
   nome: string;
-  descricao: string;
   preco: number | undefined;
   quantidade: number | undefined;
 }
