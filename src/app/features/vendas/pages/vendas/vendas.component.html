@@ -3,10 +3,49 @@
 
   <form (ngSubmit)="salvarVendas()" #vendaForm="ngForm">
     <!-- Comprador -->
-    <div class="mb-3">
-      <label class="form-label">Comprador</label>
-      <input type="text" class="form-control" [(ngModel)]="compradorCpf" name="comprador" required />
-    </div>
+   <!-- Comprador -->
+<div class="mb-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <label class="form-label m-0">Comprador</label>
+    <button 
+      mdbBtn 
+      color="dark" 
+      rounded="true" 
+      type="button" 
+      (click)="mostrarFormComprador = !mostrarFormComprador">
+      Criar novo comprador
+    </button>
+  </div>
+
+  <div *ngIf="mostrarFormComprador" class="card p-3 mb-3 shadow-sm rounded-4">
+    <form (ngSubmit)="criarComprador()">
+      <div class="row g-2">
+        <div class="col-md-4">
+          <label for="nomeComprador" class="form-label">Nome</label>
+          <input id="nomeComprador" type="text" class="form-control" [(ngModel)]="novoComprador.nome" name="nomeComprador" required />
+        </div>
+        <div class="col-md-4">
+          <label for="cpfComprador" class="form-label">CPF</label>
+          <input id="cpfComprador" type="text" class="form-control" [(ngModel)]="novoComprador.cpf" name="cpfComprador" required />
+        </div>
+        <div class="col-md-4">
+          <label for="emailComprador" class="form-label">Email</label>
+          <input id="emailComprador" type="email" class="form-control" [(ngModel)]="novoComprador.email" name="emailComprador" required />
+        </div>
+        <div class="col-12 d-flex gap-2 align-items-end mt-2">
+          <button mdbBtn color="success" type="submit">✔</button>
+          <button mdbBtn color="secondary" type="button" (click)="mostrarFormComprador = false">✖</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <select class="form-select" [(ngModel)]="compradorCpf" name="comprador" required>
+    <option [ngValue]="null" disabled selected>Selecione um comprador</option>
+    <option *ngFor="let c of compradores" [ngValue]="c.cpf">{{ c.nome }} - {{ c.cpf }}</option>
+  </select>
+</div>
+
 
     <!-- Usuário Responsável -->
     <div class="mb-3">
@@ -17,39 +56,51 @@
       </select>
     </div>
 
-    <!-- Produto -->
-    <div class="mb-3">
-      <label class="form-label">Produto</label>
-      <select class="form-select" [(ngModel)]="produtoId" name="produto" (change)="onProdutoChange()" required>
-        <option [ngValue]="null" disabled selected>Selecione um produto</option>
-        <option *ngFor="let p of produtos" [ngValue]="p.id">{{ p.nome }}</option>
-      </select>
+    <!-- Adicionar itens -->
+    <div class="row mb-3">
+      <div class="col-md-5">
+        <label class="form-label">Produto</label>
+        <select class="form-select" [(ngModel)]="produtoId" name="produto" (change)="onProdutoChange()">
+          <option [ngValue]="null" disabled selected>Selecione um produto</option>
+          <option *ngFor="let p of produtos" [ngValue]="p.id">{{ p.nome }}</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Quantidade</label>
+        <input type="number" class="form-control" [(ngModel)]="quantidade" name="quantidade" min="1" />
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Preço Unitário</label>
+        <input type="number" class="form-control" [value]="precoUnitario" readonly />
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button mdbBtn color="success" rounded="true" type="button" (click)="adicionarItem()">Adicionar</button>
+      </div>
     </div>
 
-    <!-- Quantidade -->
+    <!-- Lista de itens -->
     <div class="mb-3">
-      <label class="form-label">Quantidade</label>
-      <input type="number" class="form-control" [(ngModel)]="quantidade" name="quantidade" required min="1" />
+      <label class="form-label">Itens da Venda</label>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of itensVenda; let i = index">
+            <td>{{ getProdutoNome(item.produtoId) }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>
+              <button mdbBtn size="sm" color="danger" rounded="true" type="button" (click)="removerItem(i)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- Preço Unitário -->
-    <div class="mb-3">
-      <label class="form-label">Preço Unitário</label>
-      <input type="number" class="form-control" [value]="precoUnitario" readonly />
-    </div>
-
-    <!-- Subtotal -->
-    <div class="mb-3">
-      <label class="form-label">Subtotal</label>
-      <input type="number" class="form-control" [value]="subtotal" readonly />
-    </div>
-
-    <!-- Total -->
-    <div class="mb-3">
-      <label class="form-label">Total</label>
-      <input type="number" class="form-control" [value]="total" readonly />
-    </div>
-
-    <button class="btn btn-success" type="submit">Salvar Venda</button>
+    <button mdbBtn color="success" rounded="true" type="submit">💾 Salvar Venda</button>
   </form>
 </div>

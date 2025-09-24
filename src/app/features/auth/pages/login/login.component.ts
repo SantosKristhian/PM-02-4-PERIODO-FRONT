@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; // <-- importado
+import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { LoginRequest } from '../../../../models/login-request.model'; // <-- importado
 
 @Component({
   selector: 'app-login',
@@ -15,12 +16,12 @@ import { AuthService } from '../../../../core/services/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  loginData = { login: '', senha: '' };
+  loginData: LoginRequest = { login: '', senha: '' }; // <-- tipado certinho
   erro = '';
 
   constructor(
     private authService: AuthService,
-    private router: Router // <-- injetado
+    private router: Router
   ) {}
 
   login() {
@@ -30,9 +31,9 @@ export class LoginComponent {
         this.erro = '';
 
         // redireciona para a rota de listagem de produtos
-        this.router.navigate(['/produtos/list']); 
+        this.router.navigate(['/produtos/list']);
       },
-      error: (err) => {
+      error: () => {
         this.erro = 'Login ou senha incorretos!';
       }
     });

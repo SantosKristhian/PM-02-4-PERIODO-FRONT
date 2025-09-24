@@ -1,0 +1,35 @@
+<div class="container mt-4">
+	<h2>Relatório de Vendas</h2>
+	<table class="table table-bordered table-striped mt-3">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Data</th>
+				<th>Valor Total</th>    
+				<th>Comprador</th>
+				<th>Usuário</th>
+				<th>Status</th>
+				<th>Ações</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let venda of vendas">
+				<td>{{ venda.id }}</td>
+				<td>{{ venda.data | date:'short' }}</td>
+				<td>{{ venda.valortotal | currency:'BRL' }}</td>
+				<td>{{ venda.comprador?.nome || '-' }}</td>
+				<td>{{ venda.usuario?.nome || '-' }}</td>
+				<td>
+					<span [ngClass]="{'text-success': venda.ativo, 'text-danger': !venda.ativo}">
+						{{ venda.ativo ? 'Ativo' : 'Desativado' }}
+					</span>
+				</td>
+				<td>
+						<button mdbBtn [ngClass]="venda.ativo ? 'btn btn-secondary' : 'btn btn-success'" (click)="ativarDesativarVenda(venda)">
+							{{ venda.ativo ? 'Desativar' : 'Ativar' }}
+						</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
