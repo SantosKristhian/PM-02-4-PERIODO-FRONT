@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-relatorio',
   templateUrl: './relatorio.component.html',
   styleUrls: ['./relatorio.component.scss'],
-  imports: [CommonModule, DatePipe, CurrencyPipe]
+  imports: [CommonModule, DatePipe, CurrencyPipe, RouterModule]
 })
 export class RelatorioComponent implements OnInit {
   vendas: any[] = [];

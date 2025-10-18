@@ -5,7 +5,9 @@
 			<tr>
 				<th>ID</th>
 				<th>Data</th>
-				<th>Valor Total</th>    
+				<th>Valor Total</th>
+				<th>Valor Pago</th>
+				<th>Troco</th>
 				<th>Comprador</th>
 				<th>Usuário</th>
 				<th>Status</th>
@@ -17,6 +19,8 @@
 				<td>{{ venda.id }}</td>
 				<td>{{ venda.data | date:'short' }}</td>
 				<td>{{ venda.valortotal | currency:'BRL' }}</td>
+				<td>{{ venda.valorPago | currency:'BRL' }}</td>
+				<td>{{ venda.troco | currency:'BRL' }}</td>
 				<td>{{ venda.comprador?.nome || '-' }}</td>
 				<td>{{ venda.usuario?.nome || '-' }}</td>
 				<td>
@@ -28,6 +32,7 @@
 						<button mdbBtn [ngClass]="venda.ativo ? 'btn btn-secondary' : 'btn btn-success'" (click)="ativarDesativarVenda(venda)">
 							{{ venda.ativo ? 'Desativar' : 'Ativar' }}
 						</button>
+						<a class="btn btn-primary ms-2" [routerLink]="['/relatorios/venda', venda.id]">Ver</a>
 				</td>
 			</tr>
 		</tbody>

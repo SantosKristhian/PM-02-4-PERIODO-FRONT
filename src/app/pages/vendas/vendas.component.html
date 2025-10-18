@@ -62,7 +62,7 @@
         <label class="form-label">Produto</label>
         <select class="form-select" [(ngModel)]="produtoId" name="produto" (change)="onProdutoChange()">
           <option [ngValue]="null" disabled selected>Selecione um produto</option>
-          <option *ngFor="let p of produtos" [ngValue]="p.id">{{ p.nome }}</option>
+          <option *ngFor="let p of getProdutosAtivos()" [ngValue]="p.id">{{ p.nome }}</option>
         </select>
       </div>
       <div class="col-md-3">
@@ -83,24 +83,50 @@
       <label class="form-label">Itens da Venda</label>
       <table class="table table-bordered">
         <thead>
-          <tr>
-            <th>Produto</th>
-            <th>Quantidade</th>
-            <th>Ações</th>
-          </tr>
+            <tr>
+              <th>Produto</th>
+              <th>Quantidade</th>
+              <th>Preço Unit.</th>
+              <th>Subtotal</th>
+              <th>Ações</th>
+            </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of itensVenda; let i = index">
             <td>{{ getProdutoNome(item.produtoId) }}</td>
             <td>{{ item.quantidade }}</td>
-            <td>
-              <button mdbBtn size="sm" color="danger" rounded="true" type="button" (click)="removerItem(i)">🗑️</button>
-            </td>
+              <td>{{ getProdutoPreco(item.produtoId) | currency:'BRL' }}</td>
+              <td>{{ (getProdutoPreco(item.produtoId) * item.quantidade) | currency:'BRL' }}</td>
+              <td>
+                <button mdbBtn size="sm" color="danger" rounded="true" type="button" (click)="removerItem(i)">🗑️</button>
+              </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <button mdbBtn color="success" rounded="true" type="submit">💾 Salvar Venda</button>
+      <!-- Total atual do carrinho -->
+      <div class="mb-3">
+        <h5>Total atual: <span class="badge bg-primary">{{ totalAtual | currency:'BRL' }}</span></h5>
+      </div>
+
+    <!-- Pagamento -->
+    <div class="mb-3">
+      <label class="form-label">Forma de Pagamento</label>
+      <select class="form-select" [(ngModel)]="paymentMethod" name="paymentMethod">
+        <option value="DINHEIRO">Dinheiro</option>
+        <option value="PIX">Pix</option>
+        <option value="CARTAO_CREDITO">Cartão Crédito</option>
+        <option value="CARTAO_DEBITO">Cartão Débito</option>
+      </select>
+    </div>
+
+    <div *ngIf="paymentMethod === 'DINHEIRO'" class="mb-3">
+      <label class="form-label">Valor Pago (R$)</label>
+      <input type="number" step="0.01" class="form-control" [(ngModel)]="amountPaid" name="amountPaid" />
+      <div class="mt-2">Troco estimado: {{ troco | currency:'BRL' }}</div>
+    </div>
+
+    <button mdbBtn color="success" rounded="true" type="submit"> Salvar Venda</button>
   </form>
 </div>

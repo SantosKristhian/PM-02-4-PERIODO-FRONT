@@ -28,6 +28,10 @@ export class VendasComponent implements OnInit {
   precoUnitario: number = 0;
 total: any;
 
+  // Pagamento
+  paymentMethod: 'DINHEIRO' | 'PIX' | 'CARTAO_CREDITO' | 'CARTAO_DEBITO' = 'DINHEIRO';
+  amountPaid: number = 0; // valor pago pelo cliente
+
   mostrarFormComprador: boolean = false;
   novoComprador = {
     nome: '',
@@ -61,9 +65,23 @@ total: any;
     this.precoUnitario = produtoSelecionado?.preco ?? 0;
   }
 
+  // Retorna apenas produtos ativos (não inativos)
+  getProdutosAtivos(): Produto[] {
+    return this.produtos.filter(p => p.ativo !== false);
+  }
+
     adicionarItem() {
       if (!this.produtoId || this.quantidade <= 0) {
         alert('Selecione um produto e quantidade válida!');
+        return;
+      }
+      const produto = this.produtos.find(p => p.id === this.produtoId);
+      if (!produto) {
+        alert('Produto não encontrado.');
+        return;
+      }
+      if (produto.ativo === false) {
+        alert('Este produto está inativo e não pode ser vendido.');
         return;
       }
       this.itensVenda.push({ produtoId: this.produtoId, quantidade: this.quantidade });
@@ -81,8 +99,25 @@ total: any;
       return produto ? produto.nome : '';
     }
 
+    getProdutoPreco(id: number | null): number {
+      const produto = this.produtos.find(p => p.id === id);
+      return produto ? produto.preco ?? 0 : 0;
+    }
+
   get subtotal(): number {
     return this.quantidade * this.precoUnitario;
+  }
+
+  // Calcula o total atual da venda (soma dos itens)
+  get totalAtual(): number {
+    return this.itensVenda.reduce((acc, item) => acc + (this.produtos.find(p => p.id === item.produtoId)?.preco ?? 0) * item.quantidade, 0);
+  }
+
+  // Troco (usar centavos para evitar floats)
+  get troco(): number {
+    const cents = (n: number) => Math.round((n || 0) * 100);
+    const diff = cents(this.amountPaid) - cents(this.totalAtual);
+    return diff > 0 ? diff / 100 : 0;
   }
 
   salvarVendas() {
@@ -92,6 +127,21 @@ total: any;
       }
 
       const compradorSelecionado = this.compradores.find(c => c.cpf === this.compradorCpf);
+
+      const valortotal = this.totalAtual;
+
+      // Validação do pagamento em dinheiro
+      if (this.paymentMethod === 'DINHEIRO') {
+        if (!this.amountPaid || this.amountPaid <= 0) {
+          alert('Informe o valor pago em dinheiro.');
+          return;
+        }
+        if (this.amountPaid < valortotal) {
+          alert('Valor pago é insuficiente para cobrir o total da venda.');
+          return;
+        }
+      }
+
       const venda = {
         comprador: compradorSelecionado ? { id: compradorSelecionado.id } : null,
         usuario: { id: this.usuarioResponsavelId },
@@ -100,7 +150,9 @@ total: any;
           quantidadeVendida: item.quantidade,
           precoVendido: this.produtos.find(p => p.id === item.produtoId)?.preco ?? 0
         })),
-        valortotal: this.itensVenda.reduce((acc, item) => acc + (this.produtos.find(p => p.id === item.produtoId)?.preco ?? 0) * item.quantidade, 0),
+        valortotal: valortotal,
+        metodoPagamento: this.paymentMethod,
+        valorPago: this.paymentMethod === 'DINHEIRO' ? this.amountPaid : valortotal,
         ativo: true
       };
 
@@ -115,6 +167,7 @@ total: any;
       }
     });
       this.itensVenda = [];
+    this.amountPaid = 0;
   }
 
     criarComprador() {

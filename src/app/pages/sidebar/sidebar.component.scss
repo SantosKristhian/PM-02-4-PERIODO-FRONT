@@ -6,4 +6,11 @@
 .nav-link {
   cursor: pointer;
 }
+
+/* Ensure sidebar fills full height and stays on the left */
+aside {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
     

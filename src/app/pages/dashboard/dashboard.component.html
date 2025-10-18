@@ -1,0 +1,103 @@
+<div class="dashboard container" *ngIf="!loading">
+  <h2 class="mt-3">Painel</h2>
+
+  <div *ngIf="error" class="alert alert-danger">Erro: {{ error }}</div>
+
+  <div class="kpis row mb-4">
+    <div class="col-sm-6 col-md-3" *ngIf="true">
+      <div class="card p-3">
+        <div class="card-title">Faturamento total</div>
+        <div class="card-value">{{ faturamentoTotal | currency:'BRL' }}</div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+      <div class="card p-3">
+        <div class="card-title">Número de vendas</div>
+        <div class="card-value">{{ numeroVendas }}</div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+      <div class="card p-3">
+        <div class="card-title">Clientes</div>
+        <div class="card-value">{{ clientesAtivos }}</div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-md-3">
+      <div class="card p-3">
+        <div class="card-title">Ticket médio</div>
+        <div class="card-value">{{ ticketMedio | currency:'BRL' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card p-3 mb-3">
+        <h5>Top produtos (por quantidade)</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let p of topProdutos">
+            <strong>{{ p.nome }}</strong>
+            <span class="badge badge-primary float-right">{{ p.qtd }}</span>
+            <div class="small text-muted">Total: {{ p.total | currency:'BRL' }}</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card p-3 mb-3">
+        <h5>Produtos menos vendidos</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let p of menosVendidos">
+            <strong>{{ p.nome }}</strong>
+            <span class="badge badge-secondary float-right">{{ p.qtd }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card p-3 mb-3">
+        <h5>Estoque crítico</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let p of produtosEstoqueCritico">
+            {{ p.nome }} <span class="badge badge-danger float-right">{{ p.quantidade }}</span>
+          </li>
+          <li class="list-group-item" *ngIf="produtosEstoqueCritico.length === 0">Nenhum produto crítico</li>
+        </ul>
+      </div>
+
+      <div class="card p-3 mb-3">
+        <h5>Curva ABC (calculada localmente)</h5>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Vendido</th>
+              <th>%</th>
+              <th>Acumulado</th>
+              <th>Classe</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of curvaABC">
+              <td>{{ c.nome }}</td>
+              <td>{{ c.valorTotalVendido | currency:'BRL' }}</td>
+              <td>{{ c.percentualFaturamento | number:'1.2-2' }}%</td>
+              <td>{{ c.percentualAcumulado | number:'1.2-2' }}%</td>
+              <td><span class="badge" [ngClass]="{'badge-success': c.classificacao === 'A', 'badge-warning': c.classificacao === 'B', 'badge-secondary': c.classificacao === 'C'}">{{ c.classificacao }}</span></td>
+            </tr>
+            <tr *ngIf="curvaABC.length === 0"><td colspan="5">Sem dados</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div *ngIf="loading" class="text-center mt-5">
+  <div class="spinner-border" role="status"></div>
+  <div>Carregando dados...</div>
+</div>
