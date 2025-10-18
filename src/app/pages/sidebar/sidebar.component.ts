@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthStateService } from '../../services/auth-state.service';
 
@@ -11,8 +11,19 @@ import { AuthStateService } from '../../services/auth-state.service';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-  constructor(private auth: AuthStateService) {}
+  constructor(private auth: AuthStateService, private router: Router) {}
 
   get isAdmin() { return this.auth.isAdmin(); }
   get isVendedor() { return this.auth.isVendedor(); }
+  get currentUser() { return this.auth.currentUser; }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+
+  confirmLogout() {
+    const ok = confirm('Deseja realmente sair?');
+    if (ok) this.logout();
+  }
 }
