@@ -7,14 +7,10 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
   <h1 class="h4 fw-bold">Sistema de Estoque</h1>
 
-  <div class="d-flex gap-2">
+    <div class="d-flex gap-2">
     <!-- Botão de adicionar produto -->
     <button mdbBtn color="dark" rounded="true" (click)="mostrarForm = !mostrarForm">
       Adicionar novo item
-    </button>
-
-    <button mdbBtn color="primary" rounded="true" (click)="toggleCurvaABC()">
-      {{ mostrandoCurvaABC ? 'Voltar à lista' : 'Ver Curva ABC' }}
     </button>
 
     <button mdbBtn color="info" rounded="true" (click)="toggleMostrarInativos()">
@@ -113,41 +109,7 @@
     <!-- Tabela -->
     <div class="card rounded-4 shadow-sm">
       <div class="card-body">
-        <!-- Curva ABC view -->
-        <div *ngIf="mostrandoCurvaABC">
-          <div *ngIf="curvaLoading">Carregando Curva ABC...</div>
-          <div *ngIf="curvaError" class="text-danger">
-            <div>Erro: {{ curvaError }}</div>
-            <pre *ngIf="curvaErrorDetail" style="background:#f8f9fa;padding:8px;border-radius:4px;overflow:auto;max-height:200px">{{ curvaErrorDetail }}</pre>
-          </div>
-          <div *ngIf="!curvaLoading && !curvaError">
-            <div *ngIf="curvaFallbackUsed" class="alert alert-warning">Dados gerados localmente a partir das vendas (fallback).</div>
-            <div *ngIf="(curvaABCData || []).length === 0">Nenhum dado retornado para Curva ABC.</div>
-            <div *ngFor="let cls of ['A','B','C']">
-              <h5>Classificação {{ cls }}</h5>
-              <table class="table table-sm table-striped mb-3">
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>Valor Total Vendido</th>
-                    <th>% Faturamento</th>
-                    <th>% Acumulado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let p of (curvaPorClassificacao[cls] || [])">
-                    <td>{{ p.nome }}</td>
-                    <td>{{ p.valorTotalVendido | currency:'BRL' }}</td>
-                    <td>{{ p.percentualFaturamento | number:'1.2-2' }}%</td>
-                    <td>{{ p.percentualAcumulado | number:'1.2-2' }}%</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <table *ngIf="!mostrandoCurvaABC" mdbTable class="table table-hover align-middle mb-0">
+        <table mdbTable class="table table-hover align-middle mb-0">
           <thead>
             <tr>
               <th></th>

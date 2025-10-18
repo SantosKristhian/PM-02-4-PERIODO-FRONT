@@ -1,6 +1,51 @@
 <div class="container mt-4">
-	<h2>Relatório de Vendas</h2>
-	<table class="table table-bordered table-striped mt-3">
+		<div class="d-flex justify-content-between align-items-center">
+			<h2>Relatório de Vendas</h2>
+			<div>
+						<button class="btn btn-primary" (click)="toggleCurvaABC()">{{ showCurvaABC ? 'Ocultar Curva ABC' : 'Mostrar Curva ABC' }}</button>
+			</div>
+		</div>
+
+				<!-- Curva ABC (toggleable) -->
+				<div *ngIf="showCurvaABC">
+					<div class="card mt-4 p-3" *ngIf="curvaLoading">
+						Carregando Curva ABC...
+					</div>
+
+					<div class="card mt-4 p-3" *ngIf="!curvaLoading && (curvaABCData?.length || curvaError)">
+						<h4>Curva ABC</h4>
+						<div *ngIf="curvaError" class="text-danger">
+							<div>Erro: {{ curvaError }}</div>
+							<pre *ngIf="curvaErrorDetail" style="background:#f8f9fa;padding:8px;border-radius:4px;overflow:auto;max-height:200px">{{ curvaErrorDetail }}</pre>
+						</div>
+
+						<div *ngIf="curvaFallbackUsed" class="alert alert-warning">Dados gerados localmente a partir das vendas (fallback).</div>
+
+						<div *ngFor="let cls of ['A','B','C']">
+							<h5>Classificação {{ cls }}</h5>
+							<table class="table table-sm table-striped mb-3">
+								<thead>
+									<tr>
+										<th>Nome</th>
+										<th>Valor Total Vendido</th>
+										<th>% Faturamento</th>
+										<th>% Acumulado</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let p of (curvaPorClassificacao[cls] || [])">
+										<td>{{ p.nome }}</td>
+										<td>{{ p.valorTotalVendido | currency:'BRL' }}</td>
+										<td>{{ p.percentualFaturamento | number:'1.2-2' }}%</td>
+										<td>{{ p.percentualAcumulado | number:'1.2-2' }}%</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<table class="table table-bordered table-striped mt-3">
 		<thead>
 			<tr>
 				<th>ID</th>
@@ -29,12 +74,75 @@
 					</span>
 				</td>
 				<td>
-						<button mdbBtn [ngClass]="venda.ativo ? 'btn btn-secondary' : 'btn btn-success'" (click)="ativarDesativarVenda(venda)">
-							{{ venda.ativo ? 'Desativar' : 'Ativar' }}
-						</button>
+					<ng-container *ngIf="venda.ativo; else canceledLabel">
+					  <button mdbBtn class="btn btn-danger" (click)="ativarDesativarVenda(venda)" title="Ao desativar será perguntado se os itens foram devolvidos ao estoque">
+					    Desativar
+					  </button>
+					</ng-container>
+					<ng-template #canceledLabel>
+					  <button class="btn btn-secondary" disabled>Venda cancelada</button>
+					</ng-template>
 						<a class="btn btn-primary ms-2" [routerLink]="['/relatorios/venda', venda.id]">Ver</a>
 				</td>
 			</tr>
 		</tbody>
-	</table>
+		</table>
+
+		<!-- Curva ABC -->
+		<div class="card mt-4 p-3" *ngIf="curvaLoading">
+			Carregando Curva ABC...
+		</div>
+
+		<div class="card mt-4 p-3" *ngIf="!curvaLoading && (curvaABCData?.length || curvaError)">
+			<h4>Curva ABC</h4>
+			<div *ngIf="curvaError" class="text-danger">
+				<div>Erro: {{ curvaError }}</div>
+				<pre *ngIf="curvaErrorDetail" style="background:#f8f9fa;padding:8px;border-radius:4px;overflow:auto;max-height:200px">{{ curvaErrorDetail }}</pre>
+			</div>
+
+			<div *ngIf="curvaFallbackUsed" class="alert alert-warning">Dados gerados localmente a partir das vendas (fallback).</div>
+
+			<div *ngFor="let cls of ['A','B','C']">
+				<h5>Classificação {{ cls }}</h5>
+				<table class="table table-sm table-striped mb-3">
+					<thead>
+						<tr>
+							<th>Nome</th>
+							<th>Valor Total Vendido</th>
+							<th>% Faturamento</th>
+							<th>% Acumulado</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let p of (curvaPorClassificacao[cls] || [])">
+							<td>{{ p.nome }}</td>
+							<td>{{ p.valorTotalVendido | currency:'BRL' }}</td>
+							<td>{{ p.percentualFaturamento | number:'1.2-2' }}%</td>
+							<td>{{ p.percentualAcumulado | number:'1.2-2' }}%</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+</div>
+
+<!-- Modal de confirmação de venda -->
+<div *ngIf="showCancelModal" class="modal-backdrop" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1050;">
+	<div class="card" style="width:520px;max-width:95%;">
+		<div class="card-body">
+			<h5 class="card-title">Confirmar cancelamento</h5>
+			<p *ngIf="vendaParaCancelar">Você está prestes a cancelar a venda #{{ vendaParaCancelar.id }}. Deseja devolver os itens ao estoque?</p>
+
+			<div *ngIf="cancelError" class="alert alert-danger">{{ cancelError }}</div>
+
+			<div class="d-flex justify-content-end gap-2">
+				<button class="btn btn-outline-secondary" (click)="closeCancelModal()" [disabled]="cancelLoading">Fechar</button>
+				<button class="btn btn-secondary" (click)="confirmCancel(false)" [disabled]="cancelLoading">Não devolver</button>
+				<button class="btn btn-danger" (click)="confirmCancel(true)" [disabled]="cancelLoading">
+					<span *ngIf="!cancelLoading">Sim, devolver itens e cancelar</span>
+					<span *ngIf="cancelLoading">Processando...</span>
+				</button>
+			</div>
+		</div>
+	</div>
 </div>

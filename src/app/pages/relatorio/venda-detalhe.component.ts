@@ -30,5 +30,16 @@ export class VendaDetalheComponent implements OnInit {
     });
   }
 
+  getMetodoLabel(metodo: string | null | undefined): string {
+    if (!metodo) return '-';
+    switch (metodo) {
+      case 'DINHEIRO': return 'Dinheiro';
+      case 'PIX': return 'PIX';
+      case 'CARTAO_CREDITO': return 'Cartão de Crédito';
+      case 'CARTAO_DEBITO': return 'Cartão de Débito';
+      default: return metodo;
+    }
+  }
+
   voltar() { this.router.navigate(['/relatorios']); }
 }

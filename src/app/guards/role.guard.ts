@@ -11,7 +11,7 @@ export class RoleGuardService implements CanActivate {
   const roles: string[] = (route.data && (route.data as any)['roles']) || [];
 
     if (!user) {
-      // not logged in -> redirect to login
+      // nao logado -> redireciona para o login
       this.router.navigate(['/login']);
       return false;
     }
@@ -20,7 +20,7 @@ export class RoleGuardService implements CanActivate {
 
     if (roles.includes(user.cargo)) return true;
 
-    // logged in but not authorized -> redirect to vendas
+    // logado mas nao autorizado -> redireciona para vendas
     this.router.navigate(['/vendas']);
     return false;
   }
