@@ -1,0 +1,66 @@
+<div class="container mt-3">
+  <h3>Usuários</h3>
+
+  <div class="card p-3 mb-3">
+    <h5>Criar novo usuário</h5>
+    <div class="row">
+      <div class="col-md-6">
+        <label>Nome</label>
+        <input class="form-control" [(ngModel)]="novo.nome" />
+      </div>
+      <div class="col-md-3">
+        <label>CPF</label>
+        <input class="form-control" [(ngModel)]="novo.cpf" />
+      </div>
+      <div class="col-md-3">
+        <label>Idade</label>
+        <input type="number" class="form-control" [(ngModel)]="novo.idade" />
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col-md-4">
+        <label>Login</label>
+        <input class="form-control" [(ngModel)]="novo.login" />
+      </div>
+      <div class="col-md-4">
+        <label>Senha</label>
+        <input type="password" class="form-control" [(ngModel)]="novo.senha" />
+      </div>
+      <div class="col-md-4">
+        <label>Cargo</label>
+        <select class="form-select" [(ngModel)]="novo.cargo">
+          <option *ngFor="let c of cargos" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-3 text-right">
+      <button class="btn btn-primary" (click)="criar()">Criar usuário</button>
+    </div>
+  </div>
+
+  <div class="card p-3">
+    <h5>Lista de usuários</h5>
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Login</th>
+          <th>Cargo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuarios">
+          <td>{{ u.nome }}</td>
+          <td>{{ u.cpf }}</td>
+          <td>{{ u.login }}</td>
+          <td>{{ u.cargo }}</td>
+        </tr>
+        <tr *ngIf="usuarios.length === 0"><td colspan="4">Nenhum usuário cadastrado</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

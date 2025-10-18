@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { AuthStateService } from '../../services/auth-state.service';
 import { LoginRequest } from '../../models/login-request.model'; // <-- importado
 
 @Component({
@@ -21,7 +22,8 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private authState: AuthStateService
   ) {}
 
   login() {
@@ -29,9 +31,11 @@ export class LoginComponent {
       next: (res) => {
         console.log('Login bem-sucedido', res);
         this.erro = '';
-
-        // redireciona para a rota de listagem de produtos
-        this.router.navigate(['/produtos/list']);
+        // salvar usuario no localStorage
+        this.authState.currentUser = res;
+        // redireciona conforme cargo
+        if (res.cargo === 'ADM') this.router.navigate(['/dashboard']);
+        else this.router.navigate(['/vendas']);
       },
       error: () => {
         this.erro = 'Login ou senha incorretos!';
