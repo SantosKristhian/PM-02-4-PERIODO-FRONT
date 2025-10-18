@@ -28,6 +28,12 @@ export class VendaService {
 
   // Listar todas as vendas
   listarVendas(): Observable<Venda[]> {
-    return this.http.get<Venda[]>(this.apiUrl);
+    // A API do backend em outras partes do front usa '/findAll'.
+    return this.http.get<Venda[]>(`${this.apiUrl}/findAll`);
+  }
+
+  // Método de debug caso você queira testar a chamada à raiz do recurso
+  listarVendasRaiz(): Observable<any> {
+    return this.http.get<any>(this.apiUrl);
   }
 }

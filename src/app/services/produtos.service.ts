@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Produto } from '../../models/produto';
+import { Produto } from '../models/produto';
+import { ProdutoCurvaABCDTO } from '../models/produto-curva-abc.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +31,10 @@ export class ProdutosService {
   // Remover produto
   remover(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
+  }
+
+  // Obter dados da Curva ABC
+  curvaABC(): Observable<ProdutoCurvaABCDTO[]> {
+    return this.http.get<ProdutoCurvaABCDTO[]>(`${this.apiUrl}/curva-abc`);
   }
 }

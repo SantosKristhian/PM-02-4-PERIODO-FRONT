@@ -3,7 +3,7 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { SidebarComponent } from './shared/sidebar/sidebar.component';
+import { SidebarComponent } from './pages/sidebar/sidebar.component';
 import { filter } from 'rxjs/operators';
 
 @Component({

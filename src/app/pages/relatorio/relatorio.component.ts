@@ -5,7 +5,7 @@ import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 @Component({
   selector: 'app-relatorio',
   templateUrl: './relatorio.component.html',
-  styleUrls: ['./relatorio.component.css'],
+  styleUrls: ['./relatorio.component.scss'],
   imports: [CommonModule, DatePipe, CurrencyPipe]
 })
 export class RelatorioComponent implements OnInit {

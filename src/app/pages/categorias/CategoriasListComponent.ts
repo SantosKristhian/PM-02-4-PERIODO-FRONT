@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CategoriasService, Categoria } from '../../core/services/categorias.service';
+import { CategoriasService, Categoria } from '../../services/categorias.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-categorias-list',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  templateUrl: './categoria.component.html',
+  styleUrls: ['./categoria.component.scss']
 })
 export class CategoriasListComponent implements OnInit {
   categorias: Categoria[] = [];

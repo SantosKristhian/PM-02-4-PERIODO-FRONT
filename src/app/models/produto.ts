@@ -5,4 +5,5 @@ export interface Produto {
   nome: string;
   preco: number | undefined;
   quantidade: number | undefined;
+  ativo?: boolean;
 }

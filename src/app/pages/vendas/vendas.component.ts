@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
-import { Produto } from '../../../../models/produto';
-import { Usuario } from '../../../../models/usuario';
+import { Produto } from '../../models/produto';
+import { Usuario } from '../../models/usuario';
 
 @Component({
   selector: 'app-vendas',
