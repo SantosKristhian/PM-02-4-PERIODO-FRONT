@@ -18,4 +18,21 @@ export class UsuariosService {
   listar(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.apiUrl}/findAll`);
   }
-}
+
+  existemUsuarios(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/exists`);
+  }
+
+  existeAdministrador(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/exists-admin`);
+  }
+
+  login(login: string, senha: string): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.apiUrl}/login`, { login, senha });
+  }
+
+  criarUsuario(usuario: Usuario): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.apiUrl}/save`, usuario);
+  }
+
+  }

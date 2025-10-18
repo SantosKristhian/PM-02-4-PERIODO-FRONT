@@ -1,14 +1,26 @@
 import { Routes } from '@angular/router';
 import { RoleGuardService } from './guards/role.guard';
+import { FirstAccessGuard } from './guards/primeiro-acesso';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
 
+  // Rota de primeiro acesso - sempre acessível
+  { 
+    path: 'primeiro-acesso', 
+    loadComponent: () =>
+      import('./guards/primeiro-acesso.component').then(m => m.PrimeiroAcessoComponent)
+  },
+
+  // Rota de login - verifica se há usuários antes de permitir acesso
   {
     path: 'login',
     loadComponent: () =>
-      import('./pages/login/login.component').then(m => m.LoginComponent)
+      import('./pages/login/login.component').then(m => m.LoginComponent),
+    canActivate: [FirstAccessGuard]
   },
+
+  // Rotas protegidas por autenticação e role
   {
     path: 'produtos',
     loadComponent: () =>
@@ -18,7 +30,8 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => 
+      import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [RoleGuardService],
     data: { roles: ['ADM'] }
   },
@@ -51,5 +64,5 @@ export const routes: Routes = [
     data: { roles: ['ADM'] }
   },
 
-  { path: '**', redirectTo: '' },
+  { path: '**', redirectTo: 'login' },
 ];
