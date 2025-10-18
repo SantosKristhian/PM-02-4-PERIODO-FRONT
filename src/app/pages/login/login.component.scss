@@ -1,0 +1,19 @@
+ 
+.card {
+  background-color: white;
+}
+
+.form-control {
+  background-color: #fff !important;
+  border: 1px solid #ccc !important;
+  color: #000 !important;
+}
+::placeholder {
+  color: #6c757d !important; /* cor padrão Bootstrap cinza */
+  opacity: 1 !important; /* garante que o texto apareça */
+}
+
+input.form-control {
+  color: #000 !important; /* texto preto dentro do input */
+  background-color: #fff !important; /* fundo branco */
+}

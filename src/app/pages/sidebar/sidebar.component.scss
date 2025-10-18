@@ -7,10 +7,22 @@
   cursor: pointer;
 }
 
-/* Ensure sidebar fills full height and stays on the left */
+
 aside {
   position: sticky;
   top: 0;
   height: 100vh;
 }
-    
+    aside .nav-link {
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+aside .nav-link:hover {
+  background-color: #cacaca !important;
+  color: #000000 !important;
+}
+
+aside .nav-link:hover i {
+  color: #000000 !important;
+}
