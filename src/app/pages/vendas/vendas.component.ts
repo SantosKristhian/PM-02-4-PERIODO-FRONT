@@ -70,25 +70,86 @@ total: any;
     return this.produtos.filter(p => p.ativo !== false);
   }
 
-    adicionarItem() {
-      if (!this.produtoId || this.quantidade <= 0) {
-        alert('Selecione um produto e quantidade válida!');
-        return;
-      }
-      const produto = this.produtos.find(p => p.id === this.produtoId);
-      if (!produto) {
-        alert('Produto não encontrado.');
-        return;
-      }
-      if (produto.ativo === false) {
-        alert('Este produto está inativo e não pode ser vendido.');
-        return;
-      }
-      this.itensVenda.push({ produtoId: this.produtoId, quantidade: this.quantidade });
-      this.produtoId = null;
-      this.quantidade = 0;
-      this.precoUnitario = 0;
-    }
+   adicionarItem() {
+  
+  // Validações iniciais
+  if (this.produtoId === null || this.produtoId === undefined) {
+    alert('Selecione um produto!');
+    return;
+  }
+  if (!this.quantidade || this.quantidade <= 0) {
+    alert('Informe uma quantidade válida (> 0).');
+    return;
+  }
+
+  // Normaliza o id do produto para number (evita comparar string com number)
+  const produtoIdNum = Number(this.produtoId);
+  if (Number.isNaN(produtoIdNum)) {
+    console.error('produtoId não é numérico:', this.produtoId);
+    alert('ID do produto inválido.');
+    return;
+  }
+
+  const produto = this.produtos.find(p => Number(p.id) === produtoIdNum);
+  if (!produto) {
+    alert('Produto não encontrado.');
+    return;
+  }
+
+  // Verificação de ativo (considera undefined como ativo)
+  if (produto.ativo === false) {
+    alert('Este produto está inativo e não pode ser vendido.');
+    return;
+  }
+
+  // Coerce o estoque para number de forma segura
+  const estoqueDisponivel = (() => {
+    const v = produto.estoque ?? produto.quantidade ?? 0; // tenta estoque, senão quantidade
+    const num = Number(v);
+    return Number.isNaN(num) ? 0 : Math.floor(num); // usa inteiro e evita NaN
+  })();
+
+  console.log('Estoque disponível (coercionado):', estoqueDisponivel);
+
+  if (estoqueDisponivel <= 0) {
+    alert(`O produto "${produto.nome}" está com estoque zerado e não pode ser adicionadsso.`);
+    return;
+  }
+
+  // Quantidade já no carrinho para esse produto
+  const itemExistente = this.itensVenda.find(i => Number(i.produtoId) === produtoIdNum);
+  const qtdNoCarrinho = itemExistente ? Number(itemExistente.quantidade) : 0;
+  const qtdPretendida = qtdNoCarrinho + Number(this.quantidade);
+
+  // Validações contra estoque
+  if (Number(this.quantidade) > estoqueDisponivel) {
+    alert(`Quantidade solicitada (${this.quantidade}) excede o estoque disponível (${estoqueDisponivel}).`);
+    return;
+  }
+  if (qtdPretendida > estoqueDisponivel) {
+    alert(`Você já tem ${qtdNoCarrinho} deste produto no carrinho. Somando a quantidade atual (${this.quantidade}) ultrapassa o estoque (${estoqueDisponivel}).`);
+    return;
+  }
+
+  // Atualiza carrinho (merge se já existe)
+  if (itemExistente) {
+    itemExistente.quantidade = qtdPretendida;
+  } else {
+    this.itensVenda.push({ produtoId: produtoIdNum, quantidade: Number(this.quantidade) });
+  }
+
+  // Opcional: diminuir o estoque localmente para feedback imediato (não substitui validação no backend)
+  produto.estoque = estoqueDisponivel - (itemExistente ? (qtdPretendida - qtdNoCarrinho) : Number(this.quantidade));
+
+  // Limpa campos
+  this.produtoId = null;
+  this.quantidade = 0;
+  this.precoUnitario = 0;
+
+  console.log('Item adicionado com sucesso. Itens agora:', this.itensVenda);
+}
+
+
 
     removerItem(index: number) {
       this.itensVenda.splice(index, 1);
