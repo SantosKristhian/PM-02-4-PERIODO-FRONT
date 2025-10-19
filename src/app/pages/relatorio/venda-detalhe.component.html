@@ -8,13 +8,13 @@
     <p>Comprador: {{ venda.comprador?.nome || '-' }}</p>
     <p>Usuário: {{ venda.usuario?.nome || '-' }}</p>
     <p>Valor Total: {{ venda.valortotal | currency:'BRL' }}</p>
-    <p>Itens Devolvidos
-        <td>
-					<span *ngIf="venda.itensDevolvidos === true" class="badge bg-success">Sim</span>
-					<span *ngIf="venda.itensDevolvidos === false" class="badge bg-danger">Não</span>
-					<span *ngIf="venda.itensDevolvidos == null">-</span>
-				</td>
-    </p>
+    <p *ngIf="venda.ativo === false">
+  Itens Devolvidos:
+  <span *ngIf="venda.itensDevolvidos === true" class="badge bg-success">Sim</span>
+  <span *ngIf="venda.itensDevolvidos === false" class="badge bg-danger">Não</span>
+  <span *ngIf="venda.itensDevolvidos == null">-</span>
+</p>
+
     <h4>Itens</h4>
     <table class="table table-sm">
       <thead>
