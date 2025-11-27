@@ -42,12 +42,16 @@ export class AuthService {
   }
 
   hasCargo(cargo: string) {
-    let user = this.jwtDecode() as Usuario;
-    if (user.cargo == cargo)
-      return true;
-    else
-      return false;
-  }
+  const user = this.jwtDecode() as any;
+
+  if (!user) return false;
+
+  // compatibilidade: tenta cargo, depois role
+  const userCargo = user.cargo || user.role;
+
+  return userCargo === cargo;
+}
+
   
   getUsuarioLogado() {
     return this.jwtDecode() as Usuario;

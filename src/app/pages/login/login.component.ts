@@ -36,9 +36,13 @@ export class LoginComponent {
           this.loginService.addToken(token); //MUITO IMPORTANTE
 
         this.gerarToast().fire({ icon: "success", title: "Seja bem-vindo!" });
+        
+        if(this.loginService.hasCargo("ADMIN")){
         this.router.navigate(['/dashboard']);
+      }else {
 
-         
+        this.router.navigate(['/vendas']);
+      }
       },
       error: erro => {
         Swal.fire('Usuário ou senha incorretos!', '', 'error');

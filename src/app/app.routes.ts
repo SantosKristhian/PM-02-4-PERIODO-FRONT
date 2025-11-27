@@ -1,55 +1,22 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './pages/login/login.component';
+import { ProdutoComponent } from './pages/produtos/produto.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { VendasComponent } from './pages/vendas/vendas.component';
+import { UsuariosModule } from './pages/usuarios/usuarios.module';
+import { RelatoriosModule } from './pages/relatorio/relatorios.module';
+import { CategoriasListComponent } from './pages/categorias/CategoriasListComponent';
+import { loginGuard } from './aula/auth/login.guard';
 
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
-
- 
-  // Rota de login - verifica se há usuários antes de permitir acesso
-  {
-    path: 'login',
-    loadComponent: () =>
-      import('./pages/login/login.component').then(m => m.LoginComponent),
-    
-  },
-
-  // Rotas protegidas por autenticação e role
-  {
-    path: 'produtos',
-    loadComponent: () =>
-      import('./pages/produtos/produto.component').then(m => m.ProdutoComponent),
-      data: { roles: ['ADM','VENDEDOR'] }
-  },
-  {
-    path: 'dashboard',
-    loadComponent: () => 
-      import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
-       data: { roles: ['ADM'] }
-  },
-  {
-    path: 'vendas',
-    loadComponent: () =>
-      import('./pages/vendas/vendas.component').then(m => m.VendasComponent),
-        data: { roles: ['ADM','VENDEDOR'] }
-  },
-  {
-    path: 'usuarios',
-    loadChildren: () =>
-      import('./pages/usuarios/usuarios.module').then(m => m.UsuariosModule),
-        data: { roles: ['ADM'] }
-  },
-  {
-    path: 'relatorios',
-    loadChildren: () =>
-      import('./pages/relatorio/relatorios.module').then(m => m.RelatoriosModule),
-      data: { roles: ['ADM'] }
-  },
-  {
-    path: 'categorias',
-    loadComponent: () =>
-      import('./pages/categorias/CategoriasListComponent').then(m => m.CategoriasListComponent),
-        data: { roles: ['ADM'] }
-  },
-
-  { path: '**', redirectTo: 'login' },
+  { path: 'login', component: LoginComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [loginGuard] },
+  { path: 'produtos', component: ProdutoComponent, canActivate: [loginGuard] },
+  { path: 'vendas', component: VendasComponent, canActivate: [loginGuard] },
+  { path: 'categorias', component: CategoriasListComponent, canActivate: [loginGuard] },
+  { path: 'usuarios', loadChildren: () => import('./pages/usuarios/usuarios.module').then(m => m.UsuariosModule), canActivate: [loginGuard] },
+  { path: 'relatorios', loadChildren: () => import('./pages/relatorio/relatorios.module').then(m => m.RelatoriosModule), canActivate: [loginGuard] },
+  { path: '**', redirectTo: 'login' }
 ];
