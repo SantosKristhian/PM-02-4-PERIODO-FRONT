@@ -1,22 +1,20 @@
 <div class="container d-flex align-items-center justify-content-center min-vh-100">
   <div class="card shadow-lg p-4 rounded-4" style="max-width: 400px; width: 100%;">
     <h3 class="text-center mb-4">EstoqueManager</h3>
-    <form (ngSubmit)="login()">
+    <form (ngSubmit)="logar()">
       <!-- Login -->
       <div class="form-outline mb-3">
-        <input type="text" [(ngModel)]="loginData.login" name="login" class="form-control" placeholder="Login" required/>
+        <input type="text" [(ngModel)]="login.login" name="login" class="form-control" placeholder="Login" required/>
       </div>
 
       <!-- Senha -->
       <div class="form-outline mb-3">
-        <input type="password" [(ngModel)]="loginData.senha" name="senha" class="form-control" placeholder="Senha" required/>
+        <input type="password" [(ngModel)]="login.senha" name="senha" class="form-control" placeholder="Senha" required/>
       </div>
 
       <!-- Botão login -->
       <button type="submit" class="btn btn-primary w-100">Entrar</button>
     </form>
-
-    <!-- Mensagem de erro -->
-    <p *ngIf="erro" class="text-danger mt-2 text-center">{{ erro }}</p>
+  
   </div>
 </div>
