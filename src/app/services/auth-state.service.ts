@@ -36,6 +36,12 @@ export class AuthStateService {
     }
   }
 
+  logout() {
+    
+    this.currentUser = null;
+    this.auth.removerToken();
+  }
+
   isAdmin(): boolean {
     const u = this.currentUser;
     return !!u && (u.cargo === 'ADM' || u.cargo === 'ADMIN');
@@ -44,11 +50,5 @@ export class AuthStateService {
   isVendedor(): boolean {
     const u = this.currentUser;
     return !!u && u.cargo === 'VENDEDOR';
-  }
-
-  logout() {
-    
-    this.currentUser = null;
-    this.auth.removerToken();
   }
 }
