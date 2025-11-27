@@ -17,6 +17,21 @@ export class SidebarComponent {
   get isVendedor() { return this.auth.isVendedor(); }
   get currentUser() { return this.auth.currentUser; }
 
+  
+  get userNome(): string {
+    const u = this.currentUser;
+    if (!u) return '';
+    return (u.nome || u.name || u.username || u.sub || '').toString();
+  }
+
+   
+  get userCargo(): string {
+    const u = this.currentUser;
+    if (!u) return '';
+    const cargo = u.cargo || u.role || (u.roles && u.roles[0]) || u['authority'] || '';
+    return cargo ? cargo.toString() : '';
+  }
+
   logout() {
     this.auth.logout();
     this.router.navigate(['/login']);

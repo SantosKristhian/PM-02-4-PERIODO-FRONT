@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Login } from '../../models/login';
 import { AuthService } from '../../services/auth.service';
+import { AuthStateService } from '../../services/auth-state.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,6 +21,7 @@ export class LoginComponent {
   router = inject(Router);
 
   loginService = inject(AuthService);
+  authState = inject(AuthStateService);
 
 
   constructor(){
@@ -32,8 +34,16 @@ export class LoginComponent {
     this.loginService.logar(this.login).subscribe({
       next: token => {
 
-        if (token)
+        if (token) {
           this.loginService.addToken(token); //MUITO IMPORTANTE
+          // decode token and set current user in auth state
+          try {
+            const usuario = this.loginService.getUsuarioLogado();
+            if (usuario) this.authState.currentUser = usuario;
+          } catch (e) {
+            console.warn('Não foi possível decodificar usuário do token', e);
+          }
+        }
 
         this.gerarToast().fire({ icon: "success", title: "Seja bem-vindo!" });
         this.router.navigate(['/dashboard']);
