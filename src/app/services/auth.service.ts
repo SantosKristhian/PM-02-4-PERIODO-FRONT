@@ -4,21 +4,18 @@ import { Observable } from 'rxjs';
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { Login } from '../models/login';
 import { Usuario } from '../models/usuario';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
- http = inject(HttpClient);
-  API = "http://localhost:8080/api/emanager/login";
-
-
-  constructor() { }
-
+  http = inject(HttpClient);
+  API = environment.SERVIDOR + "/login";
 
   logar(login: Login): Observable<string> {
-    return this.http.post<string>(this.API, login, {responseType: 'text' as 'json'});
+    return this.http.post<string>(this.API, login, { responseType: 'text' as 'json' });
   }
 
   addToken(token: string) {
@@ -42,17 +39,13 @@ export class AuthService {
   }
 
   hasCargo(cargo: string) {
-  const user = this.jwtDecode() as any;
+    const user = this.jwtDecode() as any;
+    if (!user) return false;
 
-  if (!user) return false;
+    const userCargo = user.cargo || user.role;
+    return userCargo === cargo;
+  }
 
-  // compatibilidade: tenta cargo, depois role
-  const userCargo = user.cargo || user.role;
-
-  return userCargo === cargo;
-}
-
-  
   getUsuarioLogado() {
     return this.jwtDecode() as Usuario;
   }

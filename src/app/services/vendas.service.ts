@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
-// Modelo de Venda
 export interface Venda {
-  comprador: string;           // pode ser ID ou CPF, conforme backend
-  usuarioResponsavel: string;  // pode ser ID ou CPF
-  produto: string;             // pode ser ID do produto
+  comprador: string;
+  usuarioResponsavel: string;
+  produto: string;
   quantidade: number;
   precoUnitario: number;
   total: number;
@@ -16,23 +16,18 @@ export interface Venda {
   providedIn: 'root'
 })
 export class VendaService {
-  // URL ajustada para seguir o padrão do backend com /api/
-  private apiUrl = 'http://localhost:8080/api/emanager/venda'; 
+  private apiUrl = environment.SERVIDOR + '/venda';
 
   constructor(private http: HttpClient) {}
 
-  // Salvar uma venda
   salvarVenda(venda: Venda): Observable<Venda> {
     return this.http.post<Venda>(this.apiUrl, venda);
   }
 
-  // Listar todas as vendas
   listarVendas(): Observable<Venda[]> {
-    // A API do backend em outras partes do front usa '/findAll'.
     return this.http.get<Venda[]>(`${this.apiUrl}/findAll`);
   }
 
-  // Método de debug caso você queira testar a chamada à raiz do recurso
   listarVendasRaiz(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }

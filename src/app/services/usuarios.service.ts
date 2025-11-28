@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Usuario {
   id: number;
@@ -11,7 +12,7 @@ export interface Usuario {
   providedIn: 'root'
 })
 export class UsuariosService {
-  private apiUrl = 'http://localhost:8080/api/emanager/user';
+  private apiUrl = environment.SERVIDOR + '/user';
 
   constructor(private http: HttpClient) {}
 
@@ -34,5 +35,4 @@ export class UsuariosService {
   criarUsuario(usuario: Usuario): Observable<Usuario> {
     return this.http.post<Usuario>(`${this.apiUrl}/save`, usuario);
   }
-
-  }
+}
