@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  SERVIDOR: 'http://localhost:8080/api/emanager'
+  production: true,
+  SERVIDOR: 'http://52.14.48.47:8080/api/emanager'
 };
