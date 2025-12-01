@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-venda-detalhe',
@@ -24,7 +25,7 @@ export class VendaDetalheComponent implements OnInit {
 
   loadVenda(id: number) {
     this.loading = true;
-    this.http.get(`http://localhost:8080/api/emanager/venda/findById/${id}`).subscribe({
+    this.http.get(`${environment.SERVIDOR}/venda/findById/${id}`).subscribe({
       next: (v: any) => { this.venda = v; this.loading = false; },
       error: (err) => { this.error = 'Erro ao carregar venda'; this.loading = false; console.error(err); }
     });

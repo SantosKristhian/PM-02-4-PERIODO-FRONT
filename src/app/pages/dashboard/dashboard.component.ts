@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -45,10 +46,10 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
     try {
       const [vendas, produtos, clientes, usuarios] = await Promise.all([
-        this.http.get<any[]>('http://localhost:8080/api/emanager/venda/findAll').toPromise(),
-        this.http.get<any[]>('http://localhost:8080/api/emanager/produto/findAll').toPromise(),
-        this.http.get<any[]>('http://localhost:8080/api/emanager/comprador/findAll').toPromise(),
-        this.http.get<any[]>('http://localhost:8080/api/emanager/user/findAll').toPromise()
+        this.http.get<any[]>(`${environment.SERVIDOR}/venda/findAll`).toPromise(),
+        this.http.get<any[]>(`${environment.SERVIDOR}/produto/findAll`).toPromise(),
+        this.http.get<any[]>(`${environment.SERVIDOR}/comprador/findAll`).toPromise(),
+        this.http.get<any[]>(`${environment.SERVIDOR}/user/findAll`).toPromise()
       ]);
 
       this.vendas = vendas || [];

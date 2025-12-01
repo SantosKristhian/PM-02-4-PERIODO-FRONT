@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { environment } from '../../../environments/environment';
 import { RouterModule } from '@angular/router';
 import { ProdutosService } from '../../services/produtos.service';
 import { VendaService } from '../../services/vendas.service';
@@ -35,7 +36,7 @@ export class RelatorioComponent implements OnInit {
   }
 
   carregarVendas() {
-    this.http.get<any[]>('http://localhost:8080/api/emanager/venda/findAll').subscribe({
+    this.http.get<any[]>(`${environment.SERVIDOR}/venda/findAll`).subscribe({
       next: (data) => {
         this.vendas = data.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
       },
@@ -67,7 +68,7 @@ export class RelatorioComponent implements OnInit {
     if (!this.vendaParaCancelar) return;
     this.cancelLoading = true;
     const body: any = { ...this.vendaParaCancelar, ativo: false, itensDevolvidos };
-    this.http.put(`http://localhost:8080/api/emanager/venda/update/${this.vendaParaCancelar.id}`, body).subscribe({
+    this.http.put(`${environment.SERVIDOR}/venda/update/${this.vendaParaCancelar.id}`, body).subscribe({
       next: (vendaAtualizada: any) => {
         this.cancelLoading = false;
         this.showCancelModal = false;

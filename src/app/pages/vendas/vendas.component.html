@@ -1,132 +1,239 @@
 <div class="container mt-4">
   <h2>Registrar Venda</h2>
 
-  <form (ngSubmit)="salvarVendas()" #vendaForm="ngForm">
+  <form (ngSubmit)="salvarVenda()" #vendaForm="ngForm">
     <!-- Comprador -->
-   <!-- Comprador -->
-<div class="mb-3">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <label class="form-label m-0">Comprador</label>
-    <button 
-      mdbBtn 
-      color="dark" 
-      rounded="true" 
-      type="button" 
-      (click)="mostrarFormComprador = !mostrarFormComprador">
-      Criar novo comprador
-    </button>
-  </div>
-
-  <div *ngIf="mostrarFormComprador" class="card p-3 mb-3 shadow-sm rounded-4">
-    <form (ngSubmit)="criarComprador()">
-      <div class="row g-2">
-        <div class="col-md-4">
-          <label for="nomeComprador" class="form-label">Nome</label>
-          <input id="nomeComprador" type="text" class="form-control" [(ngModel)]="novoComprador.nome" name="nomeComprador" required />
-        </div>
-        <div class="col-md-4">
-          <label for="cpfComprador" class="form-label">CPF</label>
-          <input id="cpfComprador" type="text" class="form-control" [(ngModel)]="novoComprador.cpf" name="cpfComprador" required />
-        </div>
-        <div class="col-md-4">
-          <label for="emailComprador" class="form-label">Email</label>
-          <input id="emailComprador" type="email" class="form-control" [(ngModel)]="novoComprador.email" name="emailComprador" required />
-        </div>
-        <div class="col-12 d-flex gap-2 align-items-end mt-2">
-          <button mdbBtn color="success" type="submit">✔</button>
-          <button mdbBtn color="secondary" type="button" (click)="mostrarFormComprador = false">✖</button>
-        </div>
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label class="form-label m-0">Comprador (opcional)</label>
+        <button 
+          mdbBtn 
+          color="dark" 
+          rounded="true" 
+          type="button" 
+          (click)="mostrarFormComprador = !mostrarFormComprador">
+          Criar novo comprador
+        </button>
       </div>
-    </form>
-  </div>
 
-  <select class="form-select" [(ngModel)]="compradorCpf" name="comprador" required>
-    <option [ngValue]="null" disabled selected>Selecione um comprador</option>
-    <option *ngFor="let c of compradores" [ngValue]="c.cpf">{{ c.nome }} - {{ c.cpf }}</option>
-  </select>
-</div>
+      <div *ngIf="mostrarFormComprador" class="card p-3 mb-3 shadow-sm rounded-4">
+        <form (ngSubmit)="criarComprador()">
+          <div class="row g-2">
+            <div class="col-md-4">
+              <label for="nomeComprador" class="form-label">Nome *</label>
+              <input id="nomeComprador" type="text" class="form-control" [(ngModel)]="novoComprador.nome" name="nomeComprador" required />
+            </div>
+            <div class="col-md-4">
+              <label for="cpfComprador" class="form-label">CPF *</label>
+              <input id="cpfComprador" type="text" class="form-control" [(ngModel)]="novoComprador.cpf" name="cpfComprador" required 
+                placeholder="000.000.000-00" />
+            </div>
+            <div class="col-md-4">
+              <label for="emailComprador" class="form-label">Email *</label>
+              <input id="emailComprador" type="email" class="form-control" [(ngModel)]="novoComprador.email" name="emailComprador" required />
+            </div>
+            <div class="col-12 d-flex gap-2 align-items-end mt-2">
+              <button mdbBtn color="success" type="submit">Salvar</button>
+              <button mdbBtn color="secondary" type="button" (click)="mostrarFormComprador = false">Cancelar</button>
+            </div>
+          </div>
+        </form>
+      </div>
 
+      <div class="input-group">
+        <span class="input-group-text">🔍</span>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="compradorCpf" 
+          name="compradorCpf" 
+          (input)="onCpfChange()"
+          placeholder="Digite ou selecione um CPF (000.000.000-00)" 
+          list="compradoresList" />
+        <datalist id="compradoresList">
+          <option *ngFor="let c of compradores" [value]="c.cpf">{{ c.nome }} - {{ c.cpf }}</option>
+        </datalist>
+      </div>
+      
+      <div *ngIf="compradorCpf && !compradorSelecionadoId" class="text-warning mt-1">
+        <small>CPF não encontrado. Cadastre um novo comprador ou selecione um existente.</small>
+      </div>
+      
+      <div *ngIf="compradorSelecionadoId" class="text-success mt-1">
+        <small>✔ Comprador selecionado: {{ compradorCpf }}</small>
+      </div>
+    </div>
 
     <!-- Usuário Responsável -->
     <div class="mb-3">
-      <label class="form-label">Usuário Responsável</label>
+      <label class="form-label">Usuário Responsável *</label>
       <select class="form-select" [(ngModel)]="usuarioResponsavelId" name="usuarioResponsavel" required>
         <option [ngValue]="null" disabled selected>Selecione um usuário</option>
-        <option *ngFor="let u of usuarios" [ngValue]="u.id">{{ u.nome }}</option>
+        <option *ngFor="let u of usuarios" [ngValue]="u.id">{{ u.nome }} ({{ u.login }})</option>
       </select>
     </div>
 
     <!-- Adicionar itens -->
-    <div class="row mb-3">
-      <div class="col-md-5">
-        <label class="form-label">Produto</label>
-        <select class="form-select" [(ngModel)]="produtoId" name="produto" (change)="onProdutoChange()">
-          <option [ngValue]="null" disabled selected>Selecione um produto</option>
-          <option *ngFor="let p of getProdutosAtivos()" [ngValue]="p.id">{{ p.nome }}</option>
-        </select>
+    <div class="card p-3 mb-3 shadow-sm rounded-4">
+      <h5 class="mb-3">Adicionar Produtos</h5>
+      <div class="row g-3">
+        <div class="col-md-5">
+          <label class="form-label">Produto *</label>
+          <select class="form-select" [(ngModel)]="produtoId" name="produto" (change)="onProdutoChange()">
+            <option [ngValue]="null" disabled selected>Selecione um produto</option>
+            <option *ngFor="let p of getProdutosAtivos()" [ngValue]="p.id">
+              {{ p.nome }} (Estoque: {{ p.estoque ?? p.quantidade ?? 0 }})
+            </option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Quantidade *</label>
+          <input type="number" class="form-control" [(ngModel)]="quantidade" name="quantidade" min="1" 
+            [max]="getEstoqueDisponivel()" />
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Preço Unitário</label>
+          <div class="input-group">
+            <span class="input-group-text">R$</span>
+            <input type="number" class="form-control" [(ngModel)]="precoUnitario" name="precoUnitario" 
+              step="0.01" min="0.01" readonly />
+          </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button mdbBtn color="primary" rounded="true" type="button" (click)="adicionarItem()" 
+            [disabled]="!produtoId || !quantidade || quantidade <= 0">
+            <i class="fas fa-plus me-1"></i> Adicionar
+          </button>
+        </div>
       </div>
-      <div class="col-md-3">
-        <label class="form-label">Quantidade</label>
-        <input type="number" class="form-control" [(ngModel)]="quantidade" name="quantidade" min="1" />
-      </div>
-      <div class="col-md-2">
-        <label class="form-label">Preço Unitário</label>
-        <input type="number" class="form-control" [value]="precoUnitario" readonly />
-      </div>
-      <div class="col-md-2 d-flex align-items-end">
-        <button mdbBtn color="success" rounded="true" type="button" (click)="adicionarItem()">Adicionar</button>
+      
+      <div *ngIf="produtoId" class="mt-2">
+        <small class="text-muted">
+          Estoque disponível: {{ getEstoqueProdutoSelecionado() }}
+        </small>
       </div>
     </div>
 
     <!-- Lista de itens -->
-    <div class="mb-3">
-      <label class="form-label">Itens da Venda</label>
-      <table class="table table-bordered">
-        <thead>
+    <div class="mb-4" *ngIf="itensVenda.length > 0">
+      <h5 class="mb-3">Itens da Venda ({{ itensVenda.length }})</h5>
+      <div class="table-responsive">
+        <table class="table table-hover table-bordered">
+          <thead class="table-light">
             <tr>
-              <th>Produto</th>
-              <th>Quantidade</th>
-              <th>Preço Unit.</th>
-              <th>Subtotal</th>
-              <th>Ações</th>
+              <th width="30%">Produto</th>
+              <th width="15%">Quantidade</th>
+              <th width="20%">Preço Unit.</th>
+              <th width="20%">Subtotal</th>
+              <th width="15%">Ações</th>
             </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of itensVenda; let i = index">
-            <td>{{ getProdutoNome(item.produtoId) }}</td>
-            <td>{{ item.quantidade }}</td>
-              <td>{{ getProdutoPreco(item.produtoId) | currency:'BRL' }}</td>
-              <td>{{ (getProdutoPreco(item.produtoId) * item.quantidade) | currency:'BRL' }}</td>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of itensVenda; let i = index">
+              <td>{{ getProdutoNome(item.produtoId) }}</td>
               <td>
-                <button mdbBtn size="sm" color="danger" rounded="true" type="button" (click)="removerItem(i)">🗑️</button>
+                <div class="d-flex align-items-center">
+                  <span class="badge bg-secondary me-2">{{ item.quantidade }}</span>
+                </div>
               </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-      <!-- Total atual do carrinho -->
-      <div class="mb-3">
-        <h5>Total atual: <span class="badge bg-primary">{{ totalAtual | currency:'BRL' }}</span></h5>
+              <td>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">R$</span>
+                  <input type="number" class="form-control" 
+                    [(ngModel)]="item.precoVendido" 
+                    (change)="editarPrecoItem(i, item.precoVendido || 0)"
+                    step="0.01" 
+                    min="0.01"
+                    [value]="item.precoVendido || getProdutoPreco(item.produtoId)" />
+                </div>
+              </td>
+              <td>
+                <strong>{{ (item.precoVendido || getProdutoPreco(item.produtoId)) * item.quantidade | currency:'BRL' }}</strong>
+              </td>
+              <td>
+                <button mdbBtn size="sm" color="danger" rounded="true" type="button" 
+                  class="px-3" (click)="removerItem(i)">
+                  <i class="fas fa-trash"></i> Remover
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot class="table-light">
+            <tr>
+              <td colspan="3" class="text-end"><strong>Total da Venda:</strong></td>
+              <td colspan="2">
+                <h5 class="mb-0 text-primary">{{ totalAtual | currency:'BRL' }}</h5>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
-
-    <!-- Pagamento -->
-    <div class="mb-3">
-      <label class="form-label">Forma de Pagamento</label>
-      <select class="form-select" [(ngModel)]="paymentMethod" name="paymentMethod">
-        <option value="DINHEIRO">Dinheiro</option>
-        <option value="PIX">Pix</option>
-        <option value="CARTAO_CREDITO">Cartão Crédito</option>
-        <option value="CARTAO_DEBITO">Cartão Débito</option>
-      </select>
     </div>
 
-    <div *ngIf="paymentMethod === 'DINHEIRO'" class="mb-3">
-      <label class="form-label">Valor Pago (R$)</label>
-      <input type="number" step="0.01" class="form-control" [(ngModel)]="amountPaid" name="amountPaid" />
-      <div class="mt-2">Troco estimado: {{ troco | currency:'BRL' }}</div>
+    <!-- Resumo e Pagamento -->
+    <div class="card p-3 mb-4 shadow-sm rounded-4" *ngIf="itensVenda.length > 0">
+      <h5 class="mb-3">Pagamento</h5>
+      
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Forma de Pagamento *</label>
+          <select class="form-select" [(ngModel)]="paymentMethod" name="paymentMethod" required>
+            <option value="DINHEIRO">Dinheiro</option>
+            <option value="PIX">Pix</option>
+            <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+            <option value="CARTAO_DEBITO">Cartão de Débito</option>
+          </select>
+        </div>
+        
+        <div class="col-md-6" *ngIf="paymentMethod === 'DINHEIRO'">
+          <label class="form-label">Valor Pago (R$) *</label>
+          <div class="input-group">
+            <span class="input-group-text">R$</span>
+            <input type="number" step="0.01" class="form-control" 
+              [(ngModel)]="amountPaid" name="amountPaid" 
+              [min]="totalAtual" required />
+          </div>
+          
+          <div class="mt-2">
+            <div *ngIf="amountPaid > 0 && amountPaid < totalAtual" class="alert alert-warning py-1 mb-1">
+              <small><i class="fas fa-exclamation-triangle me-1"></i> 
+                Valor insuficiente! Faltam {{ (totalAtual - amountPaid) | currency:'BRL' }}
+              </small>
+            </div>
+            
+            <div *ngIf="amountPaid >= totalAtual" class="alert alert-success py-1 mb-0">
+              <small><i class="fas fa-check-circle me-1"></i> 
+                Troco: {{ troco | currency:'BRL' }}
+              </small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6" *ngIf="paymentMethod !== 'DINHEIRO'">
+          <div class="alert alert-info py-2">
+            <small>
+              <i class="fas fa-info-circle me-1"></i>
+              Valor a pagar: <strong>{{ totalAtual | currency:'BRL' }}</strong>
+            </small>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <button mdbBtn color="success" rounded="true" type="submit"> Salvar Venda</button>
+    <!-- Botões de ação -->
+    <div class="d-flex gap-2">
+      <button mdbBtn color="success" rounded="true" type="submit" 
+        [disabled]="!usuarioResponsavelId || itensVenda.length === 0"
+        class="px-4">
+        <i class="fas fa-check-circle me-2"></i>
+        Finalizar Venda
+      </button>
+      
+      <button mdbBtn color="secondary" rounded="true" type="button" 
+        (click)="limparFormulario()" class="px-4">
+        <i class="fas fa-times me-2"></i>
+        Cancelar
+      </button>
+    </div>
   </form>
 </div>

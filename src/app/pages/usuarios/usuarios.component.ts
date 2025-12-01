@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-usuarios',
@@ -47,7 +48,7 @@ export class UsuariosComponent implements OnInit {
       cargo: this.novo.cargo
     };
 
-  this.http.post('http://localhost:8080/api/emanager/user/save', payload).subscribe({
+  this.http.post(`${environment.SERVIDOR}/user/save`, payload).subscribe({
       next: () => { alert('Usuário criado'); this.novo = { nome: '', cpf: '', idade: 18, login: '', senha: '', cargo: 'VENDEDOR' }; this.load(); },
       error: err => { console.error('Erro criar usuario', err); alert('Erro ao criar usuário: ' + (err?.error?.message || err?.message || '')); }
     });
