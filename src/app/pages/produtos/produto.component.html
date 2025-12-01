@@ -1,109 +1,109 @@
 <div class="d-flex min-vh-100 bg-light">
-  <!-- Sidebar -->
-
   <main class="flex-grow-1 p-4">
     <!-- Cabeçalho -->
-  
     <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="h4 fw-bold">Sistema de Estoque</h1>
-
-    <div class="d-flex gap-2">
-    <!-- Botão de adicionar produto -->
-    <button mdbBtn color="dark" rounded="true" (click)="mostrarForm = !mostrarForm">
-      Adicionar novo item
-    </button>
-
-    <button mdbBtn color="info" rounded="true" (click)="toggleMostrarInativos()">
-      {{ showInativos ? 'Ocultar inativos' : 'Mostrar inativos' }}
-    </button>
-
-    <!-- Botão de gerenciar categorias -->
-    <button mdbBtn color="secondary" rounded="true" (click)="irParaCategorias()">
-      Gerenciar Categorias
-    </button>
-  </div>
-</div>
-
-      <!-- Formulário de criação -->
-<div *ngIf="mostrarForm" class="card p-3 mb-4 shadow-sm rounded-4">
-  <h5 class="mb-3">Novo Produto</h5>
-  <form (ngSubmit)="criarProduto()">
-    <div class="row g-2">
-      <!-- Nome -->
-      <div class="col-md-4">
-        <label for="nomeProduto" class="form-label">Nome do Produto</label>
-        <input 
-          id="nomeProduto"
-          type="text" 
-          class="form-control" 
-          [(ngModel)]="novoProduto.nome" 
-          name="nome" 
-          required 
-        />
-      </div>
-
-      <!-- Quantidade -->
-      <div class="col-md-2">
-        <label for="quantidadeProduto" class="form-label">Quantidade</label>
-        <input 
-          id="quantidadeProduto"
-          type="number" 
-          class="form-control" 
-          [(ngModel)]="novoProduto.quantidade" 
-          name="quantidade" 
-          required 
-        />
-      </div>
-
-      <!-- Preço -->
-      <div class="col-md-2">
-        <label for="precoProduto" class="form-label">Preço (R$)</label>
-        <input 
-          id="precoProduto"
-          type="number" 
-          step="0.01" 
-          class="form-control" 
-          [(ngModel)]="novoProduto.preco" 
-          name="preco" 
-          required 
-        />
-      </div>
-
-      <!-- Categoria -->
-     <div class="col-md-3">
-  <label for="categoriaProduto" class="form-label">Categoria</label>
-  <select 
-    id="categoriaProduto" 
-    class="form-select" 
-    [(ngModel)]="novoProduto.categoria.id" 
-    name="categoriaId" 
-    required>
-    <option [ngValue]="null" disabled selected>Selecione uma categoria</option>
-    <option *ngFor="let cat of categorias" [ngValue]="cat.id">
-      {{ cat.nome }}
-    </option>
-  </select>
-</div>
-
-
-      <!-- Botões -->
-      <div class="col-md-1 d-flex gap-2 align-items-end">
-        <button mdbBtn color="success" type="submit">✔</button>
-        <button mdbBtn color="secondary" type="button" (click)="mostrarForm = false">✖</button>
+      <h1 class="h4 fw-bold">Sistema de Estoque</h1>
+      <div class="d-flex gap-2">
+        <button mdbBtn color="dark" rounded="true" (click)="mostrarForm = !mostrarForm">
+          Adicionar novo item
+        </button>
+        <button mdbBtn color="info" rounded="true" (click)="toggleMostrarInativos()">
+          {{ showInativos ? 'Ocultar inativos' : 'Mostrar inativos' }}
+        </button>
+        <button mdbBtn color="secondary" rounded="true" (click)="irParaCategorias()">
+          Gerenciar Categorias
+        </button>
       </div>
     </div>
-  </form>
-</div>
 
+    <!-- Formulário de criação -->
+    <div *ngIf="mostrarForm" class="card p-3 mb-4 shadow-sm rounded-4">
+      <h5 class="mb-3">Novo Produto</h5>
+      <form (ngSubmit)="criarProduto()">
+        <div class="row g-2">
+          <!-- Nome -->
+          <div class="col-md-4">
+            <label for="nomeProduto" class="form-label">Nome do Produto</label>
+            <input 
+              id="nomeProduto"
+              type="text" 
+              class="form-control" 
+              [(ngModel)]="novoProduto.nome" 
+              name="nome" 
+              required 
+            />
+          </div>
 
+          <!-- Quantidade -->
+          <div class="col-md-2">
+            <label for="quantidadeProduto" class="form-label">Quantidade</label>
+            <input 
+              id="quantidadeProduto"
+              type="number" 
+              class="form-control" 
+              [(ngModel)]="novoProduto.quantidade" 
+              name="quantidade" 
+              min="0"
+              required 
+            />
+          </div>
 
-    <!-- Barra de busca e filtros -->
+          <!-- Preço -->
+          <div class="col-md-2">
+            <label for="precoProduto" class="form-label">Preço (R$)</label>
+            <input 
+              id="precoProduto"
+              type="number" 
+              step="0.01" 
+              class="form-control" 
+              [(ngModel)]="novoProduto.preco" 
+              name="preco" 
+              min="0.01"
+              required 
+            />
+          </div>
+
+          <!-- Categoria -->
+          <div class="col-md-3">
+            <label for="categoriaProduto" class="form-label">Categoria</label>
+            <select 
+              id="categoriaProduto" 
+              class="form-select" 
+              [(ngModel)]="novoProduto.categoria.id" 
+              name="categoriaId" 
+              required>
+              <option [ngValue]="null" disabled selected>Selecione uma categoria</option>
+              <option *ngFor="let cat of categorias" [ngValue]="cat.id">
+                {{ cat.nome }}
+              </option>
+            </select>
+            <small *ngIf="getCategoriaSelecionada()" class="text-muted">
+              Categoria selecionada: {{ getCategoriaSelecionada()?.nome }}
+            </small>
+          </div>
+
+          <!-- Botões -->
+          <div class="col-md-1 d-flex gap-2 align-items-end">
+            <button mdbBtn color="success" type="submit">Salvar</button>
+            <button mdbBtn color="secondary" type="button" (click)="mostrarForm = false">Cancelar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Barra de busca -->
     <div class="d-flex gap-2 mb-3 flex-wrap">
       <div class="form-outline flex-grow-1">
-        <input type="text" id="searchInput" class="form-control" placeholder="Buscar" [(ngModel)]="searchText" name="searchText" (input)="filtrar()" />
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="form-control" 
+          placeholder="Buscar por nome ou categoria" 
+          [(ngModel)]="searchText" 
+          name="searchText" 
+          (input)="filtrar()" 
+        />
       </div>
-
-      
     </div>
 
     <!-- Tabela -->
@@ -112,7 +112,6 @@
         <table mdbTable class="table table-hover align-middle mb-0">
           <thead>
             <tr>
-              <th></th>
               <th>Nome</th>
               <th>Categoria</th>
               <th>Estoque</th>
@@ -122,92 +121,125 @@
             </tr>
           </thead>
           <tbody>
-  <tr *ngFor="let produto of produtosVisiveis">
-  <td><input class="form-check-input" type="checkbox" /></td>
+            <tr *ngFor="let produto of produtosVisiveis">
+              <!-- Nome -->
+              <td>
+                <ng-container *ngIf="produtoEditando?.id === produto.id; else nomeView">
+                  <input 
+                    type="text"
+                    [(ngModel)]="produtoEditando!.nome"
+                    class="form-control form-control-sm"
+                    placeholder="Nome"
+                  />
+                </ng-container>
+                <ng-template #nomeView>
+                  <strong>{{ produto.nome }}</strong>
+                </ng-template>
+              </td>
 
-  <!-- Nome -->
-  <td>
-    <ng-container *ngIf="produtoEditando?.id === produto.id; else nomeView">
-      <input 
-        type="text"
-        [(ngModel)]="produtoEditando!.nome"
-        [ngModelOptions]="{standalone: true}"
-        class="form-control form-control-sm"
-        placeholder="Nome"
-      />
-    </ng-container>
-    <ng-template #nomeView>{{ produto.nome || 'Nome do produto' }}</ng-template>
-  </td>
+              <!-- Categoria -->
+              <td>
+                <ng-container *ngIf="produtoEditando?.id === produto.id; else categoriaView">
+                  <select 
+                    class="form-select form-select-sm"
+                    [(ngModel)]="produtoEditando!.categoria.id">
+                    <option [ngValue]="null" disabled>Selecione</option>
+                    <option *ngFor="let cat of categorias" [ngValue]="cat.id">
+                      {{ cat.nome }}
+                    </option>
+                  </select>
+                </ng-container>
+                <ng-template #categoriaView>
+                  <span class="badge" 
+                        [ngClass]="{
+                          'bg-primary': produto.categoria?.id === 1,
+                          'bg-success': produto.categoria?.id === 2,
+                          'bg-warning': produto.categoria?.id === 3,
+                          'bg-info': produto.categoria?.id && produto.categoria.id > 3
+                        }">
+                    {{ produto.categoria?.nome || 'Sem categoria' }}
+                  </span>
+                </ng-template>
+              </td>
 
-  <!-- Categoria -->
-  <td>
-    <ng-container *ngIf="produtoEditando?.id === produto.id; else categoriaView">
-      <input 
-        type="number"
-        [(ngModel)]="produtoEditando!.categoria.id"
-        [ngModelOptions]="{standalone: true}"
-        class="form-control form-control-sm"
-        placeholder="ID da categoria"
-      />
-    </ng-container>
-    <ng-template #categoriaView>{{ produto.categoria?.nome || 'Categoria' }}</ng-template>
-  </td>
+              <!-- Estoque -->
+              <td>
+                <ng-container *ngIf="produtoEditando?.id === produto.id; else quantidadeView">
+                  <input 
+                    type="number"
+                    [(ngModel)]="produtoEditando!.quantidade"
+                    class="form-control form-control-sm"
+                    placeholder="Qtd"
+                    min="0"
+                  />
+                </ng-container>
+                <ng-template #quantidadeView>
+                  <span [class.text-danger]="(produto.quantidade || 0) <= 0">
+                    {{ produto.quantidade || 0 }}
+                  </span>
+                </ng-template>
+              </td>
 
-  <!-- Estoque -->
-  <td>
-    <ng-container *ngIf="produtoEditando?.id === produto.id; else quantidadeView">
-      <input 
-        type="number"
-        [(ngModel)]="produtoEditando!.quantidade"
-        [ngModelOptions]="{standalone: true}"
-        class="form-control form-control-sm"
-        placeholder="Qtd"
-      />
-    </ng-container>
-    <ng-template #quantidadeView>{{ produto.quantidade ?? '-' }}</ng-template>
-  </td>
+              <!-- Preço -->
+              <td>
+                <ng-container *ngIf="produtoEditando?.id === produto.id; else precoView">
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    [(ngModel)]="produtoEditando!.preco"
+                    class="form-control form-control-sm"
+                    placeholder="Preço"
+                    min="0.01"
+                  />
+                </ng-container>
+                <ng-template #precoView>
+                  {{ (produto.preco || 0) | currency:'BRL' }}
+                </ng-template>
+              </td>
 
-  <!-- Preço -->
-  <td>
-  <ng-container *ngIf="produtoEditando?.id === produto.id; else precoView">
-      <input 
-        type="number" 
-        step="0.01"
-        [(ngModel)]="produtoEditando!.preco"
-        [ngModelOptions]="{standalone: true}"
-        class="form-control form-control-sm"
-        placeholder="Preço"
-      />
-    </ng-container>
-    <ng-template #precoView>{{ produto.preco != null ? (produto.preco | currency: 'BRL') : '-' }}</ng-template>
-  </td>
+              <!-- Status -->
+              <td>
+                <span [ngClass]="{'text-success': produto.ativo, 'text-danger': !produto.ativo}">
+                  {{ produto.ativo ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
 
-  <!-- Status -->
-  <td>
-    <span [ngClass]="{'text-success': produto.ativo, 'text-danger': !produto.ativo}">
-      {{ produto.ativo ? 'Ativo' : 'Inativo' }}
-    </span>
-  </td>
-
-  <!-- Ações -->
-  <td>
-    <ng-container *ngIf="produtoEditando?.id === produto.id; else botoesNormais">
-      <button mdbBtn size="sm" color="success" (click)="salvarEdicao()">💾</button>
-      <button mdbBtn size="sm" color="secondary" (click)="cancelarEdicao()">✖</button>
-    </ng-container>
-    <ng-template #botoesNormais>
-      <button mdbBtn size="sm" color="link" (click)="editar(produto)">✏️</button>
-      <!-- Mostrar botão de ativar somente quando o produto estiver inativo -->
-      <button *ngIf="!produto.ativo" mdbBtn size="sm" color="success" (click)="toggleAtivo(produto)">Ativar</button>
-  <button *ngIf="produto.ativo" mdbBtn size="sm" color="danger" (click)="remover(produto)">🗑️</button>
-    </ng-template>
-  </td>
-</tr>
-
-
-</tbody>
-
+              <!-- Ações -->
+              <td>
+                <ng-container *ngIf="produtoEditando?.id === produto.id; else botoesNormais">
+                  <button mdbBtn size="sm" color="success" (click)="salvarEdicao()" class="me-1">
+                    💾
+                  </button>
+                  <button mdbBtn size="sm" color="secondary" (click)="cancelarEdicao()">
+                    ✖
+                  </button>
+                </ng-container>
+                <ng-template #botoesNormais>
+                  <button mdbBtn size="sm" color="primary" (click)="editar(produto)" class="me-1">
+                    ✏️
+                  </button>
+                  <button *ngIf="!produto.ativo" 
+                          mdbBtn size="sm" color="success" 
+                          (click)="toggleAtivo(produto)" class="me-1">
+                    Ativar
+                  </button>
+                  <button *ngIf="produto.ativo" 
+                          mdbBtn size="sm" color="danger" 
+                          (click)="remover(produto)">
+                    🗑️
+                  </button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
         </table>
+        
+        <!-- Mensagem quando não há produtos -->
+        <div *ngIf="produtosVisiveis.length === 0" class="text-center py-4">
+          <p class="text-muted mb-0">
+            {{ searchText ? 'Nenhum produto encontrado para "' + searchText + '"' : 'Nenhum produto cadastrado' }}
+          </p>
+        </div>
       </div>
     </div>
   </main>

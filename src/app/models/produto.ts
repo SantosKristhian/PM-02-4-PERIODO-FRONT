@@ -1,9 +1,20 @@
 export interface Produto {
-  categoria: any;
-  estoque: any;
-  id: number;
+  id?: number;  // ⬅️ Torna opcional com "?"
   nome: string;
-  preco: number | undefined;
   quantidade: number | undefined;
+  preco: number | undefined;
   ativo?: boolean;
+  estoque?: number;
+  dataUltimaAlteracao?: string;
+  
+  categoria: {
+    id: number;
+    nome: string;
+  };
+  
+  usuarioUltimaAlteracao?: {
+    id: number;
+    nome: string;
+    username: string;
+  };
 }

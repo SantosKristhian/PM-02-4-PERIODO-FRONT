@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class ProdutosService {
   private apiUrl = environment.SERVIDOR + '/produto';
-  private usuarioId = 1;
+  private usuarioId = 1; // Considere tornar isso dinâmico (ex: do localStorage)
 
   constructor(private http: HttpClient) {}
 
@@ -19,11 +19,29 @@ export class ProdutosService {
   }
 
   adicionar(produto: Produto): Observable<Produto> {
-    return this.http.post<Produto>(`${this.apiUrl}/save/${this.usuarioId}`, produto);
+    // Garante que a categoria seja enviada no formato correto
+    const produtoParaEnviar = {
+      nome: produto.nome,
+      quantidade: produto.quantidade,
+      preco: produto.preco,
+      categoria: { id: produto.categoria.id } // Envia apenas o ID da categoria
+    };
+    
+    return this.http.post<Produto>(`${this.apiUrl}/save/${this.usuarioId}`, produtoParaEnviar);
   }
 
   editar(produto: Produto): Observable<Produto> {
-    return this.http.put<Produto>(`${this.apiUrl}/update/${produto.id}/${this.usuarioId}`, produto);
+    // Garante que a categoria seja enviada no formato correto
+    const produtoParaEnviar = {
+      id: produto.id,
+      nome: produto.nome,
+      quantidade: produto.quantidade,
+      preco: produto.preco,
+      ativo: produto.ativo,
+      categoria: { id: produto.categoria.id } // Envia apenas o ID da categoria
+    };
+    
+    return this.http.put<Produto>(`${this.apiUrl}/update/${produto.id}/${this.usuarioId}`, produtoParaEnviar);
   }
 
   remover(id: number): Observable<void> {
@@ -32,5 +50,15 @@ export class ProdutosService {
 
   curvaABC(): Observable<ProdutoCurvaABCDTO[]> {
     return this.http.get<ProdutoCurvaABCDTO[]>(`${this.apiUrl}/curva-abc`);
+  }
+
+  // Método auxiliar para formatar a categoria
+  formatarCategoriaParaEnvio(categoria: any): { id: number } {
+    if (typeof categoria === 'number') {
+      return { id: categoria };
+    } else if (categoria && typeof categoria === 'object' && categoria.id) {
+      return { id: categoria.id };
+    }
+    return { id: 0 }; // Valor padrão ou lançar erro
   }
 }
