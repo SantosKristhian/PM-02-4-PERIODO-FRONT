@@ -2,9 +2,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VendaService, VendaDTO, CompradorDTO } from '../../services/vendas.service';
+import { VendaService, VendaDTO, CompradorDTO, UsuarioResumo } from '../../services/vendas.service';
 import { Produto } from '../../models/produto';
-import { Usuario } from '../../models/usuario';
 
 @Component({
   selector: 'app-vendas',
@@ -22,7 +21,7 @@ export class VendasComponent implements OnInit {
   precoUnitario: number = 0;
 
   // Dados
-  usuarios: Usuario[] = [];
+  usuarios: UsuarioResumo[] = [];
   produtos: Produto[] = [];
   compradores: any[] = [];
 
@@ -207,6 +206,13 @@ export class VendasComponent implements OnInit {
   }
 
   // Comprador
+  maskCpf(cpf: string | null): string {
+    if (!cpf) return '';
+    const digitos = cpf.replace(/\D/g, '');
+    if (digitos.length !== 11) return cpf;
+    return `***.***.**${digitos.slice(8, 9)}-${digitos.slice(9)}`;
+  }
+
   onCpfChange(): void {
     if (this.compradorCpf) {
       const comprador = this.compradores.find(c => c.cpf === this.compradorCpf);

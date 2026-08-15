@@ -21,6 +21,11 @@ export interface CompradorDTO {
   email: string;
 }
 
+export interface UsuarioResumo {
+  id: number;
+  nome: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,9 +52,9 @@ export class VendaService {
     return this.http.post(`${this.apiUrl}/comprador/save`, comprador);
   }
 
-  // Usuários
-  listarUsuarios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/user/findAll`);
+  // Usuários (endpoint enxuto: so id+nome, acessivel a ADM e VENDEDOR)
+  listarUsuarios(): Observable<UsuarioResumo[]> {
+    return this.http.get<UsuarioResumo[]>(`${this.apiUrl}/user/findAllResumido`);
   }
 
   // Produtos
