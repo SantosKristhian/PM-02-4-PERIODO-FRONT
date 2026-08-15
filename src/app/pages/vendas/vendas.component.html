@@ -40,27 +40,35 @@
         </form>
       </div>
 
-      <div class="input-group">
+      <div class="input-group position-relative">
         <span class="input-group-text">🔍</span>
         <input
           type="text"
           class="form-control"
-          [(ngModel)]="compradorCpf"
-          name="compradorCpf"
-          (input)="onCpfChange()"
-          placeholder="Digite ou selecione um CPF (000.000.000-00)"
-          list="compradoresList" />
-        <datalist id="compradoresList">
-          <option *ngFor="let c of compradores" [value]="c.cpf">{{ c.nome }} - {{ maskCpf(c.cpf) }}</option>
-        </datalist>
+          [(ngModel)]="compradorBusca"
+          name="compradorBusca"
+          (input)="onBuscaCompradorChange()"
+          (focus)="mostrarSugestoesComprador = true"
+          (blur)="fecharSugestoesComDelay()"
+          placeholder="Digite o nome do comprador"
+          autocomplete="off" />
+        <div class="list-group position-absolute w-100 shadow-sm"
+          style="top: 100%; left: 0; z-index: 10; max-height: 220px; overflow-y: auto;"
+          *ngIf="mostrarSugestoesComprador && compradoresFiltrados.length > 0">
+          <button type="button" class="list-group-item list-group-item-action"
+            *ngFor="let c of compradoresFiltrados"
+            (mousedown)="selecionarComprador(c)">
+            {{ c.nome }} <span class="text-muted small">({{ maskCpf(c.cpf) }})</span>
+          </button>
+        </div>
       </div>
 
-      <div *ngIf="compradorCpf && !compradorSelecionadoId" class="text-warning mt-1">
-        <small>CPF não encontrado. Cadastre um novo comprador ou selecione um existente.</small>
+      <div *ngIf="compradorBusca && !compradorSelecionadoId && compradoresFiltrados.length === 0" class="text-warning mt-1">
+        <small>Nenhum comprador encontrado com esse nome. Cadastre um novo comprador ou ajuste a busca.</small>
       </div>
 
       <div *ngIf="compradorSelecionadoId" class="text-success mt-1">
-        <small>✔ Comprador selecionado: {{ maskCpf(compradorCpf) }}</small>
+        <small>✔ Comprador selecionado: {{ compradorSelecionadoNome }}</small>
       </div>
     </div>
 

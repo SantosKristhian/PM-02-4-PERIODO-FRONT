@@ -14,7 +14,8 @@ import { Produto } from '../../models/produto';
 })
 export class VendasComponent implements OnInit {
   // Formulário
-  compradorCpf: string = '';
+  compradorBusca: string = '';
+  mostrarSugestoesComprador: boolean = false;
   usuarioResponsavelId: number | null = null;
   produtoId: number | null = null;
   quantidade: number = 0;
@@ -40,6 +41,7 @@ export class VendasComponent implements OnInit {
   // Carrinho
   itensVenda: { produtoId: number, quantidade: number, precoVendido?: number }[] = [];
   compradorSelecionadoId: number | null = null;
+  compradorSelecionadoNome: string = '';
 
   constructor(private vendaService: VendaService) {}
 
@@ -213,13 +215,32 @@ export class VendasComponent implements OnInit {
     return `***.***.**${digitos.slice(8, 9)}-${digitos.slice(9)}`;
   }
 
-  onCpfChange(): void {
-    if (this.compradorCpf) {
-      const comprador = this.compradores.find(c => c.cpf === this.compradorCpf);
-      this.compradorSelecionadoId = comprador ? comprador.id : null;
-    } else {
+  get compradoresFiltrados(): any[] {
+    const termo = this.compradorBusca.trim().toLowerCase();
+    if (!termo) return [];
+    return this.compradores
+      .filter(c => c.nome?.toLowerCase().includes(termo))
+      .slice(0, 8);
+  }
+
+  onBuscaCompradorChange(): void {
+    this.mostrarSugestoesComprador = true;
+    if (this.compradorSelecionadoId && this.compradorBusca !== this.compradorSelecionadoNome) {
       this.compradorSelecionadoId = null;
+      this.compradorSelecionadoNome = '';
     }
+  }
+
+  selecionarComprador(comprador: any): void {
+    this.compradorSelecionadoId = comprador.id;
+    this.compradorSelecionadoNome = comprador.nome;
+    this.compradorBusca = comprador.nome;
+    this.mostrarSugestoesComprador = false;
+  }
+
+  fecharSugestoesComDelay(): void {
+    // delay para o (mousedown) da sugestão registrar antes do dropdown fechar
+    setTimeout(() => this.mostrarSugestoesComprador = false, 150);
   }
 
   criarComprador(): void {
@@ -228,10 +249,11 @@ export class VendasComponent implements OnInit {
     this.vendaService.criarComprador(this.novoComprador).subscribe({
       next: (data: any) => {
         alert('Comprador criado com sucesso!');
-        this.compradorCpf = this.novoComprador.cpf;
-        this.onCpfChange();
         this.resetarFormComprador();
         this.carregarCompradores();
+        if (data?.id) {
+          this.selecionarComprador(data);
+        }
       },
       error: (err) => {
         console.error('Erro ao criar comprador', err);
@@ -307,8 +329,8 @@ export class VendasComponent implements OnInit {
       }
     }
 
-    if (this.compradorCpf && !this.compradorSelecionadoId) {
-      alert('CPF do comprador não encontrado. Verifique ou cadastre um novo comprador.');
+    if (this.compradorBusca && !this.compradorSelecionadoId) {
+      alert('Comprador não encontrado. Verifique o nome ou cadastre um novo comprador.');
       return false;
     }
 
@@ -330,20 +352,21 @@ export class VendasComponent implements OnInit {
 
   private tratarErroVenda(err: any): void {
     console.error('Erro ao salvar venda:', err);
-    
+
     let mensagemErro = 'Erro ao salvar venda!';
     if (err.error?.message) {
       mensagemErro += `\n${err.error.message}`;
     }
-    
+
     alert(mensagemErro);
   }
 
   limparFormulario(): void {
     this.itensVenda = [];
     this.amountPaid = 0;
-    this.compradorCpf = '';
+    this.compradorBusca = '';
     this.compradorSelecionadoId = null;
+    this.compradorSelecionadoNome = '';
     this.usuarioResponsavelId = null;
     this.produtoId = null;
     this.quantidade = 0;
