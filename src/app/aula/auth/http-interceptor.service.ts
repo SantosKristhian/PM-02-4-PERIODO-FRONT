@@ -3,11 +3,14 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthStateService } from '../../services/auth-state.service';
+import { NotificationService } from '../../shared/services/notification.service';
+import { extractErrorMessage } from '../../shared/utils/http-error.util';
 
 export const meuhttpInterceptor: HttpInterceptorFn = (request, next) => {
 
   let router = inject(Router);
   let authState = inject(AuthStateService);
+  let notification = inject(NotificationService);
 
   let token = localStorage.getItem('token');
 
@@ -22,14 +25,13 @@ export const meuhttpInterceptor: HttpInterceptorFn = (request, next) => {
       if (err instanceof HttpErrorResponse) {
         if (err.status === 401) {
           // Sessão inválida/expirada: desloga de verdade e manda pro login.
+          notification.error('Sua sessão expirou. Faça login novamente.');
           authState.logout();
           router.navigate(['/login']);
-        } else if (err.status === 403) {
-          // Usuário autenticado, só sem permissão para essa ação - nao desloga.
-          const mensagem = err.error?.error || 'Você não tem permissão para executar esta ação.';
-          alert(mensagem);
         } else {
-          console.error('HTTP error:', err);
+          // Usuário autenticado (403 - sem permissão) ou outro erro do backend:
+          // mostra a mensagem em um toast, sem deslogar nem navegar.
+          notification.error(extractErrorMessage(err, 'Ocorreu um erro inesperado. Tente novamente.'));
         }
       } else {
         console.error('An error occurred:', err);

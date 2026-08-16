@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './pages/sidebar/sidebar.component';
+import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
+import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -14,7 +16,9 @@ import { filter } from 'rxjs/operators';
     FormsModule,
     HttpClientModule,
     CommonModule,
-    SidebarComponent
+    SidebarComponent,
+    ToastContainerComponent,
+    ConfirmDialogComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']

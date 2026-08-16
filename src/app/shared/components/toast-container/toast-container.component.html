@@ -1,0 +1,16 @@
+<div class="toast-container">
+  <div
+    *ngFor="let toast of toasts()"
+    class="toast-item alert d-flex align-items-start shadow-sm"
+    [ngClass]="{
+      'alert-success': toast.type === 'success',
+      'alert-danger': toast.type === 'error',
+      'alert-warning': toast.type === 'warning',
+      'alert-info': toast.type === 'info'
+    }"
+    role="alert">
+    <i class="fas me-2 mt-1" [ngClass]="iconePara(toast.type)"></i>
+    <div class="flex-grow-1">{{ toast.mensagem }}</div>
+    <button type="button" class="btn-close ms-2" aria-label="Fechar" (click)="dismiss(toast.id)"></button>
+  </div>
+</div>

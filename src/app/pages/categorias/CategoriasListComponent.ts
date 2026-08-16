@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CategoriasService, Categoria } from '../../services/categorias.service';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../shared/services/notification.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-categorias-list',
@@ -12,6 +14,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./categoria.component.scss']
 })
 export class CategoriasListComponent implements OnInit {
+  private notification = inject(NotificationService);
+  private confirmDialog = inject(ConfirmDialogService);
+
   categorias: Categoria[] = [];
   mostrarForm: boolean = false;
 
@@ -50,6 +55,7 @@ export class CategoriasListComponent implements OnInit {
         this.carregarCategorias();
         this.novaCategoria.nome = '';
         this.mostrarForm = false;
+        this.notification.success('Categoria criada com sucesso!');
       },
       error: erro => console.error('Erro ao adicionar categoria:', erro)
     });
@@ -68,6 +74,7 @@ export class CategoriasListComponent implements OnInit {
       next: () => {
         this.carregarCategorias();
         this.categoriaEditando = null;
+        this.notification.success('Categoria atualizada com sucesso!');
       },
       error: erro => console.error('Erro ao editar categoria:', erro)
     });
@@ -79,15 +86,16 @@ export class CategoriasListComponent implements OnInit {
   }
 
   // Remover categoria
-  removerCategoria(id: number): void {
-    if (!confirm('Deseja realmente excluir esta categoria?')) return;
+  async removerCategoria(id: number): Promise<void> {
+    const confirmado = await this.confirmDialog.confirm('Deseja realmente excluir esta categoria?');
+    if (!confirmado) return;
 
     this.categoriasService.remover(id).subscribe({
-      next: () => this.carregarCategorias(),
-      error: erro => {
-        console.error('Erro ao remover categoria:', erro);
-        alert('Não foi possível remover a categoria. Ela pode estar vinculada a produtos.');
-      }
+      next: () => {
+        this.carregarCategorias();
+        this.notification.success('Categoria removida com sucesso!');
+      },
+      error: erro => console.error('Erro ao remover categoria:', erro)
     });
   }
 }
