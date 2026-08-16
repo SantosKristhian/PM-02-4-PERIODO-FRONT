@@ -6,6 +6,7 @@ import { Produto } from '../../models/produto';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../shared/services/notification.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-produto',
@@ -16,6 +17,7 @@ import { NotificationService } from '../../shared/services/notification.service'
 })
 export class ProdutoComponent implements OnInit {
   private notification = inject(NotificationService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   produtos: Produto[] = [];
   categorias: Categoria[] = [];
@@ -161,22 +163,23 @@ export class ProdutoComponent implements OnInit {
     this.produtoEditando = null;
   }
 
-  remover(produto: Produto): void {
+  async remover(produto: Produto): Promise<void> {
     if (!produto.id) {
       console.error('Produto não tem ID válido:', produto);
       this.notification.error('Produto não tem ID válido.');
       return;
     }
 
-    if (confirm(`Deseja realmente excluir "${produto.nome}"?`)) {
-      this.produtosService.remover(produto.id).subscribe({
-        next: () => {
-          this.carregarProdutos();
-          this.notification.success('Produto excluído com sucesso!');
-        },
-        error: (erro: any) => console.error('Erro ao remover produto:', erro)
-      });
-    }
+    const confirmado = await this.confirmDialog.confirm(`Deseja realmente excluir "${produto.nome}"?`);
+    if (!confirmado) return;
+
+    this.produtosService.remover(produto.id).subscribe({
+      next: () => {
+        this.carregarProdutos();
+        this.notification.success('Produto excluído com sucesso!');
+      },
+      error: (erro: any) => console.error('Erro ao remover produto:', erro)
+    });
   }
 
   filtrar(): void {

@@ -3,6 +3,7 @@ import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthStateService } from '../../services/auth-state.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -16,19 +17,20 @@ export class SidebarComponent {
   auth = inject(AuthService);
   authState = inject(AuthStateService);
   router = inject(Router);
+  private confirmDialog = inject(ConfirmDialogService);
 
   constructor() {}
 
    get currentUser() { return this.authState.currentUser; }
 
-  
+
   get userNome(): string {
     const u = this.currentUser;
     if (!u) return '';
     return (u.nome || u.name || u.username || u.sub || '').toString();
   }
 
-   
+
   get userCargo(): string {
     const u = this.currentUser;
     if (!u) return '';
@@ -36,10 +38,10 @@ export class SidebarComponent {
     return cargo ? cargo.toString() : '';
   }
 
- 
 
-  confirmLogout() {
-    const ok = confirm('Deseja realmente sair?');
+
+  async confirmLogout(): Promise<void> {
+    const ok = await this.confirmDialog.confirm('Deseja realmente sair?');
     if (!ok) return;
     this.authState.logout();
     this.router.navigate(['/login']);
