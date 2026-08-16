@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService } from '../../services/usuarios.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -13,6 +14,8 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./usuarios.component.scss']
 })
 export class UsuariosComponent implements OnInit {
+  private notification = inject(NotificationService);
+
   usuarios: any[] = [];
   novo = { nome: '', cpf: '', idade: 18, login: '', senha: '', cargo: 'VENDEDOR' };
   loading = false;
@@ -30,13 +33,13 @@ export class UsuariosComponent implements OnInit {
     this.loading = true;
     this.usuariosService.listar().subscribe({
       next: data => { this.usuarios = data || []; this.loading = false; },
-      error: err => { console.error(err); this.error = err?.message || 'Erro ao carregar'; this.loading = false; }
+      error: err => { console.error(err); this.loading = false; }
     });
   }
 
   criar() {
     if (!this.novo.nome || !this.novo.cpf || !this.novo.login || !this.novo.senha) {
-      alert('Preencha todos os campos obrigatórios');
+      this.notification.warning('Preencha todos os campos obrigatórios');
       return;
     }
     const payload = {
@@ -48,9 +51,13 @@ export class UsuariosComponent implements OnInit {
       cargo: this.novo.cargo
     };
 
-  this.http.post(`${environment.SERVIDOR}/user/save`, payload).subscribe({
-      next: () => { alert('Usuário criado'); this.novo = { nome: '', cpf: '', idade: 18, login: '', senha: '', cargo: 'VENDEDOR' }; this.load(); },
-      error: err => { console.error('Erro criar usuario', err); alert('Erro ao criar usuário: ' + (err?.error?.message || err?.message || '')); }
+    this.http.post(`${environment.SERVIDOR}/user/save`, payload).subscribe({
+      next: () => {
+        this.notification.success('Usuário criado com sucesso!');
+        this.novo = { nome: '', cpf: '', idade: 18, login: '', senha: '', cargo: 'VENDEDOR' };
+        this.load();
+      },
+      error: err => console.error('Erro criar usuario', err)
     });
   }
 

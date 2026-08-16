@@ -1,9 +1,10 @@
 // vendas.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VendaService, VendaDTO, CompradorDTO, UsuarioResumo } from '../../services/vendas.service';
 import { Produto } from '../../models/produto';
+import { NotificationService } from '../../shared/services/notification.service';
 
 @Component({
   selector: 'app-vendas',
@@ -13,6 +14,8 @@ import { Produto } from '../../models/produto';
   styleUrls: ['./vendas.component.scss']
 })
 export class VendasComponent implements OnInit {
+  private notification = inject(NotificationService);
+
   // Formulário
   compradorBusca: string = '';
   mostrarSugestoesComprador: boolean = false;
@@ -66,7 +69,6 @@ export class VendasComponent implements OnInit {
     this.vendaService.listarProdutos().subscribe({
       next: (data) => {
         this.produtos = data;
-        console.log('Produtos carregados:', this.produtos);
       },
       error: (err) => console.error('Erro ao carregar produtos', err)
     });
@@ -76,7 +78,6 @@ export class VendasComponent implements OnInit {
     this.vendaService.listarCompradores().subscribe({
       next: (data) => {
         this.compradores = data;
-        console.log('Compradores carregados:', this.compradores);
       },
       error: (err) => console.error('Erro ao carregar compradores', err)
     });
@@ -144,12 +145,12 @@ export class VendasComponent implements OnInit {
 
   private validarItemParaAdicao(): boolean {
     if (!this.produtoId) {
-      alert('Selecione um produto!');
+      this.notification.warning('Selecione um produto!');
       return false;
     }
 
     if (!this.quantidade || this.quantidade <= 0) {
-      alert('Informe uma quantidade válida (> 0).');
+      this.notification.warning('Informe uma quantidade válida (> 0).');
       return false;
     }
 
@@ -157,18 +158,18 @@ export class VendasComponent implements OnInit {
     const produto = this.produtos.find(p => p.id === produtoIdNum);
 
     if (!produto) {
-      alert('Produto não encontrado.');
+      this.notification.warning('Produto não encontrado.');
       return false;
     }
 
     if (produto.ativo === false) {
-      alert('Este produto está inativo e não pode ser vendido.');
+      this.notification.warning('Este produto está inativo e não pode ser vendido.');
       return false;
     }
 
     const estoqueDisponivel = this.getEstoqueProduto(produto);
     if (estoqueDisponivel <= 0) {
-      alert(`O produto "${produto.nome}" está com estoque zerado.`);
+      this.notification.warning(`O produto "${produto.nome}" está com estoque zerado.`);
       return false;
     }
 
@@ -177,12 +178,12 @@ export class VendasComponent implements OnInit {
     const qtdPretendida = qtdNoCarrinho + this.quantidade;
 
     if (this.quantidade > estoqueDisponivel) {
-      alert(`Quantidade solicitada (${this.quantidade}) excede o estoque disponível (${estoqueDisponivel}).`);
+      this.notification.warning(`Quantidade solicitada (${this.quantidade}) excede o estoque disponível (${estoqueDisponivel}).`);
       return false;
     }
 
     if (qtdPretendida > estoqueDisponivel) {
-      alert(`Você já tem ${qtdNoCarrinho} deste produto no carrinho. Somando a quantidade atual ultrapassa o estoque (${estoqueDisponivel}).`);
+      this.notification.warning(`Você já tem ${qtdNoCarrinho} deste produto no carrinho. Somando a quantidade atual ultrapassa o estoque (${estoqueDisponivel}).`);
       return false;
     }
 
@@ -203,7 +204,7 @@ export class VendasComponent implements OnInit {
     if (novoPreco > 0) {
       this.itensVenda[index].precoVendido = novoPreco;
     } else {
-      alert('O preço deve ser maior que zero.');
+      this.notification.warning('O preço deve ser maior que zero.');
     }
   }
 
@@ -248,35 +249,32 @@ export class VendasComponent implements OnInit {
 
     this.vendaService.criarComprador(this.novoComprador).subscribe({
       next: (data: any) => {
-        alert('Comprador criado com sucesso!');
+        this.notification.success('Comprador criado com sucesso!');
         this.resetarFormComprador();
         this.carregarCompradores();
         if (data?.id) {
           this.selecionarComprador(data);
         }
       },
-      error: (err) => {
-        console.error('Erro ao criar comprador', err);
-        alert(`Erro ao criar comprador! ${err.error?.message || ''}`);
-      }
+      error: (err) => console.error('Erro ao criar comprador', err)
     });
   }
 
   private validarComprador(): boolean {
     if (!this.novoComprador.nome || !this.novoComprador.cpf || !this.novoComprador.email) {
-      alert('Preencha todos os campos do comprador!');
+      this.notification.warning('Preencha todos os campos do comprador!');
       return false;
     }
 
     const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/;
     if (!cpfRegex.test(this.novoComprador.cpf)) {
-      alert('CPF inválido. Use o formato 000.000.000-00 ou 00000000000.');
+      this.notification.warning('CPF inválido. Use o formato 000.000.000-00 ou 00000000000.');
       return false;
     }
 
     const jaExiste = this.compradores.some(c => c.cpf === this.novoComprador.cpf);
     if (jaExiste) {
-      alert('Já existe um comprador cadastrado com esse CPF. Selecione na lista!');
+      this.notification.warning('Já existe um comprador cadastrado com esse CPF. Selecione na lista!');
       this.mostrarFormComprador = false;
       return false;
     }
@@ -295,42 +293,39 @@ export class VendasComponent implements OnInit {
 
     const vendaDTO: VendaDTO = this.criarVendaDTO();
 
-    console.log('Enviando vendaDTO:', JSON.stringify(vendaDTO, null, 2));
-
     this.vendaService.salvarVenda(vendaDTO, this.usuarioResponsavelId!).subscribe({
-      next: (response: any) => {
-        alert('Venda salva com sucesso!');
-        console.log('Venda salva:', response);
+      next: () => {
+        this.notification.success('Venda salva com sucesso!');
         this.limparFormulario();
       },
-      error: (err) => this.tratarErroVenda(err)
+      error: (err) => console.error('Erro ao salvar venda:', err)
     });
   }
 
   private validarVenda(): boolean {
     if (!this.usuarioResponsavelId) {
-      alert('Selecione um usuário responsável!');
+      this.notification.warning('Selecione um usuário responsável!');
       return false;
     }
 
     if (!this.itensVenda.length) {
-      alert('Adicione ao menos um item à venda!');
+      this.notification.warning('Adicione ao menos um item à venda!');
       return false;
     }
 
     if (this.paymentMethod === 'DINHEIRO') {
       if (!this.amountPaid || this.amountPaid <= 0) {
-        alert('Informe o valor pago em dinheiro.');
+        this.notification.warning('Informe o valor pago em dinheiro.');
         return false;
       }
       if (this.amountPaid < this.totalAtual) {
-        alert(`Valor pago (R$ ${this.amountPaid.toFixed(2)}) é insuficiente para o total (R$ ${this.totalAtual.toFixed(2)}).`);
+        this.notification.warning(`Valor pago (R$ ${this.amountPaid.toFixed(2)}) é insuficiente para o total (R$ ${this.totalAtual.toFixed(2)}).`);
         return false;
       }
     }
 
     if (this.compradorBusca && !this.compradorSelecionadoId) {
-      alert('Comprador não encontrado. Verifique o nome ou cadastre um novo comprador.');
+      this.notification.warning('Comprador não encontrado. Verifique o nome ou cadastre um novo comprador.');
       return false;
     }
 
@@ -348,17 +343,6 @@ export class VendasComponent implements OnInit {
         precoVendido: item.precoVendido || null
       }))
     };
-  }
-
-  private tratarErroVenda(err: any): void {
-    console.error('Erro ao salvar venda:', err);
-
-    let mensagemErro = 'Erro ao salvar venda!';
-    if (err.error?.message) {
-      mensagemErro += `\n${err.error.message}`;
-    }
-
-    alert(mensagemErro);
   }
 
   limparFormulario(): void {
