@@ -1,0 +1,74 @@
+<div class="container mt-4">
+  <h2>Log de Auditoria</h2>
+
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <label class="form-label m-0">Entidade:</label>
+    <select class="form-select w-auto" [(ngModel)]="filtroEntidade" (change)="carregar()">
+      <option value="">Todas</option>
+      <option *ngFor="let e of entidades" [value]="e">{{ e }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="loading" class="text-muted">Carregando...</div>
+
+  <div class="table-responsive" *ngIf="!loading">
+    <table class="table table-hover table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Data/Hora</th>
+          <th>Entidade</th>
+          <th>Registro alterado</th>
+          <th>Ação</th>
+          <th>Alterado por</th>
+          <th>Detalhes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let registro of registros">
+          <tr>
+            <td>{{ registro.dataHora | date:'short' }}</td>
+            <td>{{ registro.entidade }}</td>
+            <td>{{ nomeRegistro(registro) }}</td>
+            <td>
+              <span class="badge" [ngClass]="classeAcao(registro.acao)">{{ registro.acao }}</span>
+            </td>
+            <td>{{ registro.usuarioNome }}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-secondary" (click)="toggleDetalhes(registro)">
+                {{ registroExpandidoId === registro.id ? 'Ocultar' : 'Ver' }}
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="registroExpandidoId === registro.id">
+            <td colspan="6">
+              <div class="p-2">
+                <table class="table table-sm mb-0" *ngIf="camposAlterados(registro).length > 0">
+                  <thead>
+                    <tr>
+                      <th>Campo</th>
+                      <th>De</th>
+                      <th>Para</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let c of camposAlterados(registro)">
+                      <td>{{ c.campo }}</td>
+                      <td class="text-danger">{{ c.de === null ? '-' : c.de }}</td>
+                      <td class="text-success">{{ c.para === null ? '-' : c.para }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div *ngIf="camposAlterados(registro).length === 0" class="text-muted small">
+                  Nenhum campo alterado.
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="registros.length === 0">
+          <td colspan="6" class="text-center text-muted">Nenhum registro de auditoria encontrado.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

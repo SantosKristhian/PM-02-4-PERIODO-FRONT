@@ -1,32 +1,19 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../shared/services/notification.service';
+
+const ROTAS_SOMENTE_ADM = ['/dashboard', '/relatorios', '/categorias', '/usuarios', '/auditoria'];
 
 export const loginGuard: CanActivateFn = (route, state) => {
 
-let loginService = inject(AuthService);
+  let loginService = inject(AuthService);
+  let notification = inject(NotificationService);
 
-if(loginService.hasCargo("VENDEDOR") && state.url == '/dashboard' ){
-  alert ('voce nao tem permissão');
-  return false;
-}
-
-if(loginService.hasCargo("VENDEDOR") && state.url == '/relatorios' ){
-  alert ('voce nao tem permissão');
-  return false;
-}
-
-if(loginService.hasCargo("VENDEDOR") && state.url == '/categorias' ){
-  alert ('voce nao tem permissão');
-  return false;
-}
-
-if(loginService.hasCargo("VENDEDOR") && state.url == '/usuarios' ){
-  alert ('voce nao tem permissão');
-  return false;
-}
-
-
+  if (loginService.hasCargo("VENDEDOR") && ROTAS_SOMENTE_ADM.includes(state.url)) {
+    notification.warning('Você não tem permissão para acessar esta página.');
+    return false;
+  }
 
   return true;
 };
