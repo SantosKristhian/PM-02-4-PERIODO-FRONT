@@ -61,6 +61,24 @@ export class AuditoriaComponent implements OnInit {
     }
   }
 
+  // Resolve um rotulo legivel pro registro afetado (ex: "Fulano (#17)"),
+  // usando o nome guardado no snapshot em vez de so o ID numerico.
+  nomeRegistro(registro: RegistroAuditoria): string {
+    const snapshot = this.parseJson(registro.dadosDepois) || this.parseJson(registro.dadosAntes);
+    if (!snapshot) return `#${registro.entidadeId}`;
+
+    if (registro.entidade === 'PRODUTO' || registro.entidade === 'USUARIO') {
+      return snapshot['nome'] ? `${snapshot['nome']} (#${registro.entidadeId})` : `#${registro.entidadeId}`;
+    }
+
+    if (registro.entidade === 'VENDA') {
+      const responsavel = snapshot['usuarioNome'];
+      return responsavel ? `Venda #${registro.entidadeId} (${responsavel})` : `Venda #${registro.entidadeId}`;
+    }
+
+    return `#${registro.entidadeId}`;
+  }
+
   private parseJson(valor: string | null): Record<string, any> | null {
     if (!valor) return null;
     try {

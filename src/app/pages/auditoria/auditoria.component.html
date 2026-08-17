@@ -17,9 +17,9 @@
         <tr>
           <th>Data/Hora</th>
           <th>Entidade</th>
-          <th>ID</th>
+          <th>Registro alterado</th>
           <th>Ação</th>
-          <th>Usuário</th>
+          <th>Alterado por</th>
           <th>Detalhes</th>
         </tr>
       </thead>
@@ -28,7 +28,7 @@
           <tr>
             <td>{{ registro.dataHora | date:'short' }}</td>
             <td>{{ registro.entidade }}</td>
-            <td>{{ registro.entidadeId }}</td>
+            <td>{{ nomeRegistro(registro) }}</td>
             <td>
               <span class="badge" [ngClass]="classeAcao(registro.acao)">{{ registro.acao }}</span>
             </td>
